@@ -3,7 +3,7 @@ import { placeNode, removeNode, RexieNode, updateNode } from './pixi'
 import { HookState, HookType } from './hooks'
 import { isFunction, UNDEFINED } from './util'
 import { Fiber, FiberFinish, Tag } from './fiber'
-import { schedule } from './schedule'
+import { startTransition } from './schedule'
 
 export function commitWork(fiber?: FiberFinish) {
     if (!fiber) return
@@ -26,14 +26,14 @@ export function commitWork(fiber?: FiberFinish) {
     fiber.old = UNDEFINED
     attachRef(fiber.ref, fiber.node)
     commitWork(fiber.child)
-    commitWork(fiber.sibling)
-    // bubble
     commitDeletions(fiber)
+    commitWork(fiber.sibling)
     commitHookEffects(fiber)
 }
 
 function commitDeletions(fiber: FiberFinish) {
     fiber.deletions?.forEach(deletion => commitDeletion(deletion))
+    fiber.deletions = UNDEFINED
 }
 
 function commitDeletion(fiber: FiberFinish) {
@@ -42,13 +42,8 @@ function commitDeletion(fiber: FiberFinish) {
         fiber.children?.forEach(commitDeletion)
     } else {
         removeNode(fiber.parentNode, fiber.node)
-        commitReleaseRef(fiber)
+        attachRef(fiber.ref, UNDEFINED)
     }
-}
-
-function commitReleaseRef(fiber: Fiber) {
-    if (fiber.children) fiber.children.forEach(child => commitReleaseRef(child))
-    attachRef(fiber.ref, UNDEFINED)
 }
 
 function attachRef(ref?: Ref, node?: RexieNode) {
@@ -59,7 +54,9 @@ function attachRef(ref?: Ref, node?: RexieNode) {
 function commitHookEffects(fiber: Fiber) {
     if (!fiber.hooks) return
     updateEffects(fiber.hooks[HookType.Layout])
-    schedule(() => fiber.hooks && updateEffects(fiber.hooks[HookType.Effect]))
+    startTransition(
+        () => fiber.hooks && updateEffects(fiber.hooks[HookType.Effect]),
+    )
 }
 
 function updateEffects(effects: HookState[]) {
