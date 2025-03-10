@@ -7,9 +7,10 @@ export {
     useRef,
     useLayout,
     useLayout as useLayoutEffect,
-    useImperativeHandle,
     createContext,
     useContext,
 } from './hooks'
 export { render } from './render'
 export { shouldYield, startTransition } from './schedule'
+export { useImperativeHandle } from './hooks/useImperativeHandle'
+export { useSyncExternalStore } from './hooks/useSyncExternalStore'
