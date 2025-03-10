@@ -1,5 +1,3 @@
-import { NULL, UNDEFINED } from './util'
-
 export type Action = (() => Action) | Promise<Action> | void
 
 export interface Task {
@@ -59,7 +57,7 @@ async function processActionAsync(task: Task, action: Promise<Action>) {
     taskQueue.shift()
     taskQueue.push(task)
 
-    if (task.wait === UNDEFINED) {
+    if (task.wait === undefined) {
         task.wait = true
     } else {
         return
@@ -84,15 +82,15 @@ async function processActionAsync(task: Task, action: Promise<Action>) {
 
 function resolveAsyncTask(task: Task) {
     const first = firstTask()
-    if (first == task) {
+    if (first === task) {
         resolveSyncTask(task)
     } else {
         taskQueue.splice(
-            taskQueue.findIndex(t => t == task),
+            taskQueue.findIndex(t => t === task),
             1,
         )
-        task.next = UNDEFINED
-        task.wait = UNDEFINED
+        task.next = undefined
+        task.wait = undefined
         first.onResolved = () => {
             first.onResolved?.()
             task.onResolved?.()
@@ -111,7 +109,7 @@ function processActionSync(task: Task, action: () => Action | void) {
 
 function resolveSyncTask(task: Task) {
     taskQueue.shift()
-    task.next = UNDEFINED
+    task.next = undefined
     task.onResolved?.()
 }
 
@@ -121,6 +119,6 @@ function scheduleWork(work: () => void) {
     else if (typeof MessageChannel !== 'undefined') {
         const { port1, port2 } = new MessageChannel()
         port1.onmessage = work
-        port2.postMessage(NULL)
+        port2.postMessage(null)
     } else setTimeout(work)
 }

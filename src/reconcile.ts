@@ -1,12 +1,11 @@
 import { Fiber, Tag } from './fiber'
-import { NULL } from './util'
 
 export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
     const oldChildren = currentFiber.children || []
     currentFiber.children = newChildren
 
     if (newChildren.length === 0) {
-        if (currentFiber.deletions == NULL) {
+        if (currentFiber.deletions === undefined) {
             currentFiber.deletions = []
         }
 
@@ -36,7 +35,7 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
             newChild.tag = Tag.UPDATE
         } else {
             newChild.tag = Tag.PLACEMENT
-            if (matchOldIndex != NULL) {
+            if (matchOldIndex !== undefined) {
                 mergeOldFiber(newChild, oldChildren[matchOldIndex])
                 reservedIndexMap[matchOldIndex] = true
             }
@@ -46,7 +45,7 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
     })
 
     if (oldChildren.length > newChildren.length) {
-        if (currentFiber.deletions == NULL) currentFiber.deletions = []
+        if (currentFiber.deletions === undefined) currentFiber.deletions = []
         for (let i = newChildren.length; i < oldChildren.length; i++) {
             if (reservedIndexMap[i]) continue
             currentFiber.deletions.push(oldChildren[i])
@@ -66,7 +65,7 @@ function mergeOldFiber(target: Fiber, source: Fiber) {
 function createKeyIndexMap(children: Fiber[]) {
     let map: Record<string, number | undefined> = {}
     for (let i = 0; i < children.length; i++) {
-        if (children[i].key == NULL) continue
+        if (children[i].key === undefined) continue
         map[keyAndType(children[i])] = i
     }
     return map

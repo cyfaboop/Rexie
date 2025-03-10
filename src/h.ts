@@ -1,4 +1,4 @@
-import { isFunction, NULL, UNDEFINED } from './util'
+import { isFunction } from './util'
 import { FIBER_TYPE } from './symbols'
 import { ExternalFC, FC } from './component'
 import {
@@ -30,8 +30,8 @@ export function h<T extends FC | keyof JSX.IntrinsicElements>(
     ...children: Children[]
 ) {
     const nonNullProps = props ?? ({} as IntrinsicPropsOf<T>)
-    const key = nonNullProps.key ?? UNDEFINED
-    const ref = nonNullProps.ref ?? UNDEFINED
+    const key = nonNullProps.key ?? undefined
+    const ref = nonNullProps.ref ?? undefined
     delete nonNullProps.key
     delete nonNullProps.ref
 
@@ -51,7 +51,7 @@ export function h<T extends FC | keyof JSX.IntrinsicElements>(
 export function normalizeChildren(children: Children) {
     const arr = Array.isArray(children) ? children : [children]
     return arr
-        .filter(child => child != NULL)
+        .filter(child => child != null)
         .map(child => {
             if (isValidElement(child)) return child
             return h('text', {
@@ -63,7 +63,7 @@ export function normalizeChildren(children: Children) {
 export function isValidElement(obj: unknown): obj is Fiber {
     return (
         typeof obj === 'object' &&
-        obj !== NULL &&
+        obj !== null &&
         (obj as Fiber).$$typeof === FIBER_TYPE
     )
 }

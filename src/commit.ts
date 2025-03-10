@@ -1,7 +1,7 @@
 import { Ref } from './ref'
 import { placeNode, removeNode, RexieNode, updateNode } from './pixi'
 import { HookState, HookType } from './hooks'
-import { isFunction, UNDEFINED } from './util'
+import { isFunction } from './util'
 import { Fiber, FiberFinish, Tag } from './fiber'
 import { startTransition } from './schedule'
 
@@ -23,7 +23,7 @@ export function commitWork(fiber?: FiberFinish) {
     }
 
     fiber.tag = Tag.NONE
-    fiber.old = UNDEFINED
+    fiber.old = undefined
     attachRef(fiber.ref, fiber.node)
     commitWork(fiber.child)
     commitDeletions(fiber)
@@ -33,7 +33,7 @@ export function commitWork(fiber?: FiberFinish) {
 
 function commitDeletions(fiber: FiberFinish) {
     fiber.deletions?.forEach(deletion => commitDeletion(deletion))
-    fiber.deletions = UNDEFINED
+    fiber.deletions = undefined
 }
 
 function commitDeletion(fiber: FiberFinish) {
@@ -42,7 +42,7 @@ function commitDeletion(fiber: FiberFinish) {
         fiber.children?.forEach(commitDeletion)
     } else {
         removeNode(fiber.parentNode, fiber.node)
-        attachRef(fiber.ref, UNDEFINED)
+        attachRef(fiber.ref, undefined)
     }
 }
 

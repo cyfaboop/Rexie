@@ -1,5 +1,5 @@
 import { RefObject } from './ref'
-import { isFunction, UNDEFINED } from './util'
+import { isFunction } from './util'
 import { Fiber } from './fiber'
 import { update } from './render'
 import { FC, getCurrentFC } from './component'
@@ -268,7 +268,7 @@ export function createContext<T>(initialValue: T) {
  */
 export function useContext<T>(contextType: ContextType<T>) {
     let subscribersSet: Set<Subscriber> | undefined
-    const triggerUpdate = useState(UNDEFINED)[1] as Subscriber
+    const triggerUpdate = useState(undefined)[1] as Subscriber
 
     useEffect(() => {
         return () => subscribersSet && subscribersSet.delete(triggerUpdate)

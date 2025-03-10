@@ -1,7 +1,6 @@
 import { normalizeChildren } from './h'
 import { resetHookIndex } from './hooks'
 import { createNode } from './pixi'
-import { UNDEFINED } from './util'
 import {
     IntrinsicAttributes,
     Children,
@@ -20,7 +19,7 @@ export interface FC<P = IntrinsicAttributes> {
     shouldUpdate?: (newProps: P, oldProps: P) => boolean
 }
 
-let currentFC: Fiber | undefined = UNDEFINED
+let currentFC: Fiber | undefined = undefined
 export const getCurrentFC = () => currentFC
 export const setCurrentFC = (fiber: Fiber) => (currentFC = fiber)
 

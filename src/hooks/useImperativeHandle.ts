@@ -1,6 +1,6 @@
 import { Dependencies, useLayout } from 'src/hooks'
 import { Ref } from 'src/ref'
-import { isFunction, NULL } from 'src/util'
+import { isFunction } from 'src/util'
 
 /**
  * @param ref The ref that will be mutated
@@ -17,16 +17,16 @@ export function useImperativeHandle<T, R extends T>(
             if (isFunction(ref)) {
                 const result = ref(create())
                 return () => {
-                    ref(NULL)
+                    ref(null)
                     isFunction(result) && result()
                 }
             } else if (ref) {
                 ref.current = create()
                 return () => {
-                    ref.current = NULL
+                    ref.current = null
                 }
             }
         },
-        dependencies == NULL ? dependencies : dependencies.concat(ref),
+        dependencies == null ? dependencies : dependencies.concat(ref),
     )
 }
