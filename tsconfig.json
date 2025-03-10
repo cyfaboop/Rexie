@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "noImplicitThis": false,
+        "alwaysStrict": true,
+        "allowJs": false,
+        "skipLibCheck": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "esModuleInterop": true,
+        "removeComments": false,
+        "sourceMap": false,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "baseUrl": ".",
+        "outDir": "temp",
+        "target": "es2016",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "lib": ["es2016", "dom"],
+        "types": ["node"],
+        "rootDir": ".",
+        "paths": {
+            "src/*": ["src/*"]
+        },
+        "jsx": "react",
+        "jsxFactory": "h",
+        "jsxFragmentFactory": "Fragment"
+    },
+    "include": ["src/**/*", "index.d.ts", "examples/demo.tsx"]
+}
