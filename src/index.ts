@@ -12,4 +12,4 @@ export {
     useContext,
 } from './hooks'
 export { render } from './render'
-export { shouldYield, schedule as startTranstion } from './schedule'
+export { shouldYield, startTransition } from './schedule'

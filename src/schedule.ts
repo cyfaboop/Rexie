@@ -11,6 +11,15 @@ let useMicrotask = false
 const taskQueue: Task[] = []
 const TASK_YIELD_THRESHOLD_MS = 5
 
+/**
+ * Non-urgent update (transitional update):
+ * For example, search suggestions, data loading, etc., which can be processed later.
+ * Marks the wrapped update as non-urgent, and the action will be executed after the UI update.
+ */
+export function startTransition(action: () => void) {
+    schedule(action)
+}
+
 export function schedule(next: TaskGenerator) {
     taskQueue.push({ next })
     startUnitOfWork(processTaskQueue)
@@ -37,6 +46,11 @@ function processTaskQueue() {
 }
 
 const firstTask = () => taskQueue[0]
+
+/**
+ * Determines if the current task should yield control back to the main thread.
+ * This function compares the current time with a predefined deadline.
+ */
 export const shouldYield = () => performance.now() >= deadline
 
 function startUnitOfWork(work: () => void) {
