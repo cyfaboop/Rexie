@@ -1,9 +1,10 @@
 import { NULL, UNDEFINED } from './util'
 
-export type TaskGenerator = (pending?: boolean) => TaskGenerator | void
+export type Action = (() => Action) | Promise<Action> | void
 
 export interface Task {
-    next?: TaskGenerator
+    next: Action
+    wait?: boolean
     onResolved?: () => void
 }
 
@@ -17,13 +18,13 @@ const TASK_YIELD_THRESHOLD_MS = 5
  * For example, search suggestions, data loading, etc., which can be processed later.
  * Marks the wrapped update as non-urgent, and the action will be executed after the UI update.
  */
-export function startTransition(action: () => void) {
+export function startTransition(action: () => void | Promise<void>) {
     schedule(action)
 }
 
-export function schedule(next: TaskGenerator, onResolved?: () => void) {
-    taskQueue.push({ next, onResolved })
-    startUnitOfWork(processTaskQueue)
+export function schedule(action: Action, onResolved?: () => void) {
+    taskQueue.push({ next: action, onResolved })
+    scheduleWork(processTaskQueue)
 }
 
 function processTaskQueue() {
@@ -31,19 +32,18 @@ function processTaskQueue() {
 
     while (firstTask() && !shouldYield()) {
         const task = firstTask()
-        const next = task.next?.()
-        if (next) {
-            task.next = next
+        if (task.next instanceof Promise) {
+            processAsyncAction(task, task.next)
+        } else if (task.next) {
+            processActionSync(task, task.next)
         } else {
-            taskQueue.shift()
-            task.next = UNDEFINED
-            task.onResolved?.()
+            resolveSyncTask(task)
         }
     }
 
     if (firstTask()) {
         useMicrotask = !shouldYield()
-        startUnitOfWork(processTaskQueue)
+        scheduleWork(processTaskQueue)
     }
 }
 
@@ -55,7 +55,67 @@ const firstTask = () => taskQueue[0]
  */
 export const shouldYield = () => performance.now() >= deadline
 
-function startUnitOfWork(work: () => void) {
+async function processAsyncAction(task: Task, action: Promise<Action>) {
+    taskQueue.shift()
+    taskQueue.push(task)
+
+    if (task.wait === UNDEFINED) {
+        task.wait = true
+    } else {
+        return
+    }
+
+    action
+        .then(next => {
+            if (next) {
+                task.next = next
+            } else {
+                resolveAsyncTask(task)
+            }
+        })
+        .catch(err => {
+            resolveAsyncTask(task)
+
+            if (__DEV__) {
+                console.error(err)
+            }
+        })
+}
+
+function resolveAsyncTask(task: Task) {
+    const first = firstTask()
+    if (first == task) {
+        resolveSyncTask(task)
+    } else {
+        taskQueue.splice(
+            taskQueue.findIndex(t => t == task),
+            1,
+        )
+        task.next = UNDEFINED
+        task.wait = UNDEFINED
+        first.onResolved = () => {
+            first.onResolved?.()
+            task.onResolved?.()
+        }
+    }
+}
+
+function processActionSync(task: Task, action: () => Action | void) {
+    const next = action?.()
+    if (next) {
+        task.next = next
+    } else {
+        resolveSyncTask(task)
+    }
+}
+
+function resolveSyncTask(task: Task) {
+    taskQueue.shift()
+    task.next = UNDEFINED
+    task.onResolved?.()
+}
+
+function scheduleWork(work: () => void) {
     if (useMicrotask && typeof queueMicrotask !== 'undefined')
         queueMicrotask(work)
     else if (typeof MessageChannel !== 'undefined') {
