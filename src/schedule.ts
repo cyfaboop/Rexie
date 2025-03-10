@@ -33,7 +33,7 @@ function processTaskQueue() {
     while (firstTask() && !shouldYield()) {
         const task = firstTask()
         if (task.next instanceof Promise) {
-            processAsyncAction(task, task.next)
+            processActionAsync(task, task.next)
         } else if (task.next) {
             processActionSync(task, task.next)
         } else {
@@ -55,7 +55,7 @@ const firstTask = () => taskQueue[0]
  */
 export const shouldYield = () => performance.now() >= deadline
 
-async function processAsyncAction(task: Task, action: Promise<Action>) {
+async function processActionAsync(task: Task, action: Promise<Action>) {
     taskQueue.shift()
     taskQueue.push(task)
 
