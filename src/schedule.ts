@@ -1,9 +1,10 @@
 import { NULL, UNDEFINED } from './util'
 
-export type TaskGenerator = () => TaskGenerator | void
+export type TaskGenerator = (pending?: boolean) => TaskGenerator | void
 
 export interface Task {
     next?: TaskGenerator
+    onResolved?: () => void
 }
 
 let deadline = 0
@@ -20,8 +21,8 @@ export function startTransition(action: () => void) {
     schedule(action)
 }
 
-export function schedule(next: TaskGenerator) {
-    taskQueue.push({ next })
+export function schedule(next: TaskGenerator, onResolved?: () => void) {
+    taskQueue.push({ next, onResolved })
     startUnitOfWork(processTaskQueue)
 }
 
@@ -34,8 +35,9 @@ function processTaskQueue() {
         if (next) {
             task.next = next
         } else {
-            task.next = UNDEFINED
             taskQueue.shift()
+            task.next = UNDEFINED
+            task.onResolved?.()
         }
     }
 
