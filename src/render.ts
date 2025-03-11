@@ -1,5 +1,6 @@
 import { RexieNode } from './pixi'
 import { Fiber } from './fiber'
+import { unmountFiber } from './commit'
 import { schedule } from './schedule'
 import { performSyncWork, performConcurrentWork } from './workLoop'
 
@@ -29,7 +30,11 @@ export function update(fiber: Fiber, sync = false) {
         if (sync) {
             performSyncWork(fiber)
         } else {
-            return schedule(() => performConcurrentWork(fiber))
+            const interrupt = schedule(() => performConcurrentWork(fiber))
+            return () => {
+                interrupt()
+                unmountFiber(fiber)
+            }
         }
     }
 }
