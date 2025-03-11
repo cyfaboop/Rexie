@@ -57,11 +57,8 @@ async function processActionAsync(task: Task, action: Promise<Action>) {
     taskQueue.shift()
     taskQueue.push(task)
 
-    if (task.wait === undefined) {
-        task.wait = true
-    } else {
-        return
-    }
+    if (task.wait) return
+    task.wait = true
 
     action
         .then(next => {
