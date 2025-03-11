@@ -3,11 +3,25 @@ import { Fiber } from './fiber'
 import { schedule } from './schedule'
 import { performSyncWork, performConcurrentWork } from './workLoop'
 
+export function render(fiber: Fiber, node: RexieNode, sync: true): void
+export function render(
+    fiber: Fiber,
+    node: RexieNode,
+    sync: false,
+): (() => void) | void
+export function render(
+    fiber: Fiber,
+    node: RexieNode,
+    sync?: boolean,
+): (() => void) | void
 export function render(fiber: Fiber, node: RexieNode, sync = false) {
     fiber.rootNode = node
-    update(fiber, sync)
+    return update(fiber, sync)
 }
 
+export function update(fiber: Fiber, sync: true): void
+export function update(fiber: Fiber, sync: false): (() => void) | void
+export function update(fiber: Fiber, sync?: boolean): (() => void) | void
 export function update(fiber: Fiber, sync = false) {
     // Commit changes only if the node is marked as dirty
     if (!fiber.dirty) {
@@ -15,7 +29,7 @@ export function update(fiber: Fiber, sync = false) {
         if (sync) {
             performSyncWork(fiber)
         } else {
-            schedule(() => performConcurrentWork(fiber))
+            return schedule(() => performConcurrentWork(fiber))
         }
     }
 }
