@@ -1,26 +1,13 @@
 import { Fiber, Tag } from './fiber'
 
 export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
-    const oldChildren = currentFiber.children || []
-    currentFiber.children = newChildren
-
-    if (newChildren.length === 0) {
-        if (currentFiber.deletions === undefined) {
-            currentFiber.deletions = []
-        }
-
-        for (let i = 0; i < oldChildren.length; i++) {
-            currentFiber.deletions.push(oldChildren[i])
-        }
-
-        return
-    }
-
     let oldChild: Fiber | undefined
     let prevChild: Fiber | undefined
+    const oldChildren = currentFiber.children || []
     const oldKeyIndexMap = createKeyIndexMap(oldChildren)
     const reservedIndexMap: Record<number, boolean | undefined> = {}
 
+    currentFiber.children = newChildren
     newChildren.forEach((newChild, index) => {
         oldChild = oldChildren[index] as Fiber | undefined
         newChild.old = oldChild
