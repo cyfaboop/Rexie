@@ -1,4 +1,4 @@
-import { Fiber, Tag } from './fiber'
+import { Fiber, Command } from './fiber'
 
 export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
     let oldChild: Fiber | undefined
@@ -19,9 +19,9 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
 
         if (oldChild && newChildKT === keyAndType(oldChild)) {
             mergeOldFiber(newChild, oldChild)
-            newChild.tag = Tag.UPDATE
+            newChild.cmd = Command.UPDATE
         } else {
-            newChild.tag = Tag.PLACEMENT
+            newChild.cmd = Command.PLACEMENT
             if (matchOldIndex !== undefined) {
                 mergeOldFiber(newChild, oldChildren[matchOldIndex])
                 reservedIndexMap[matchOldIndex] = true

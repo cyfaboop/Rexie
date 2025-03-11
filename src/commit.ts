@@ -2,27 +2,27 @@ import { Ref } from './ref'
 import { placeNode, removeNode, RexieNode, updateNode } from './pixi'
 import { HookState, HookType } from './hooks'
 import { isFunction } from './util'
-import { Fiber, FiberFinish, Tag } from './fiber'
+import { Fiber, FiberFinish, Command } from './fiber'
 import { startTransition } from './schedule'
 
 export function commitWork(fiber?: FiberFinish) {
     if (!fiber) return
 
     if (fiber.fc) {
-        if (fiber.child) fiber.child.tag |= fiber.tag
+        if (fiber.child) fiber.child.cmd |= fiber.cmd
     } else {
-        if (fiber.tag & Tag.PLACEMENT) {
+        if (fiber.cmd & Command.PLACEMENT) {
             placeNode(fiber.parentNode, fiber.node, fiber.old?.node)
             if (fiber.old) {
                 deleteFiber(fiber.old)
             }
         }
-        if (fiber.tag & Tag.UPDATE) {
+        if (fiber.cmd & Command.UPDATE) {
             updateNode(fiber.node, fiber.props, fiber.old?.props || {})
         }
     }
 
-    fiber.tag = Tag.NONE
+    fiber.cmd = Command.NONE
     fiber.old = undefined
     attachRef(fiber.ref, fiber.node)
     commitWork(fiber.child)

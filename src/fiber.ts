@@ -17,7 +17,7 @@ type FiberFCFinish = FiberBaseFinish &
     }
 
 interface FiberBaseFinish extends FiberBase {
-    tag: Tag
+    cmd: Command
     old?: FiberFinish
     child?: FiberFinish
     parent?: FiberFinish
@@ -53,7 +53,7 @@ interface FiberBase {
     id: number
     key?: Key
     ref?: Ref
-    tag?: Tag
+    cmd?: Command
     old?: Fiber
     node?: RexieNode
     hooks?: Hooks
@@ -98,7 +98,7 @@ export type Child =
     | null
     | undefined
 
-export const enum Tag {
+export const enum Command {
     NONE = 0,
     UPDATE = 1 << 1,
     PLACEMENT = 1 << 2,
