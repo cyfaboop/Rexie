@@ -14,7 +14,7 @@ alpha
 
 - **React Hooks** - `useState`, `useEffect`...`useTransition`, `useSyncExternalStore`
 - **Component-Based** - Native JSX/TSX support with full type system
-- **Focus on Core Logic** - Dedicate to business logic while Rexie handles tedious drawing routines
+- **Focus on Core Logic** - Dedicate to core logic while Rexie handles tedious drawing routines
 - **Sync/Concurrent** - Choose your update strategy per render
 
 ### Feather-Light
