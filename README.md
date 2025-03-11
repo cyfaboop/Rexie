@@ -7,12 +7,12 @@ alpha
 
 ## 特性
 
-### 简化开发
+### 开发体验
 
 - **React Hooks** - `useState`, `useEffect`...`useTransition`, `useSyncExternalStore`
 - **组件化开发** - 原生 JSX/TSX 支持，完善的类型提示系统
 - **专注核心逻辑** - 专注核心逻辑，把烦人的套路绘图代码放进Rexie
-- **sync/concurrent** - 更新模式自由切换
+- **sync/concurrent** - 每一次更新都能自选模式
 
 ### 轻如鸿毛
 
