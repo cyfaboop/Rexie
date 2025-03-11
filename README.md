@@ -1,26 +1,31 @@
 <h1 align="center">Rexie</h1>
-<p align="center">轻量级 PixiJS 框架 | 类 React Hooks | 3KB 极简内核</p>
+<p align="center">PixiJS | React Hooks | 3kB</p>
+<p align="center">
+  <a href="https://github.com/wooloo26/rexie/tree/main/docs/ZH.md">中文</a>
+</p>
 
-## 快速开始
+## Quick Start
 
 alpha
 
-## 特性
+## Features
 
-### 开发体验
+### Development
 
 - **React Hooks** - `useState`, `useEffect`...`useTransition`, `useSyncExternalStore`
-- **组件化开发** - 原生 JSX/TSX 支持，完善的类型提示系统
-- **专注核心逻辑** - 专注核心逻辑，把烦人的套路绘图代码放进Rexie
-- **sync/concurrent** - 每一次更新都能自选模式
+- **Component-Based** - Native JSX/TSX support with full type system
+- **Focus on Core Logic** - Dedicate to business logic while Rexie handles tedious drawing routines
+- **Sync/Concurrent** - Choose your update strategy per render
 
-### 轻如鸿毛
+### Feather-Light
 
-- **3KB 极简内核** - 没有重量级runtime和语法糖，不再选择困难
-- **无冗余依赖** - 仅依赖 PixiJS 核心库
-- **原生接口** - 直接暴露 PixiJS 原生 API
-- **按需渲染**：多实例独立渲染，灵活挂载至任意容器节点，也可随时销毁
+- **3kB Core** - No heavyweight runtime or syntax sugar, simplicity first
+- **Zero Dependencies** - Only depends on PixiJS core
+- **Direct API Access** - Full exposure of native PixiJS APIs
+- **On-Demand Rendering** - Independent multi-instance rendering, mountable to any container, disposable anytime
 
-### 不只是pixijs
+### Beyond PixiJS
 
-- **renderer切换** - 一百行搞定增删查改，极速适配
+- **Renderer Agnostic** - Adapt new renderers with <100 lines of code
+- **Framework Integration** - Built for seamless embedding in React/Vue/etc
+- **Universal Core** - Platform-agnostic core with browser/Canvas/WebGL extensions
