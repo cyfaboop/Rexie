@@ -16,6 +16,7 @@ declare global {
         export interface TextElement
             extends ContainerElement<PIXI.TextOptions> {
             text?: PIXI.TextString
+            style?: PIXI.TextStyle
             resolution?: number
         }
 

@@ -8,7 +8,7 @@ import { isFunction } from 'src/util'
  * @param dependencies If present, effect will only activate if the values in the list change (using Object.is).
  */
 export function useImperativeHandle<T, R extends T>(
-    ref: Ref<T>,
+    ref: Ref<T | null>,
     create: () => R,
     dependencies?: Dependencies,
 ) {

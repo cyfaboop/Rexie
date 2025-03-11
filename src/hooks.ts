@@ -70,11 +70,11 @@ export function useState<S = undefined>(initialState?: S | (() => S)) {
     )
 }
 
-export function invokeAction<S>(
+function invokeAction<S>(
     state: S | (() => S) | undefined,
     action: StateUpdater<S | (() => S) | undefined>,
 ) {
-    return isFunction(action) ? action(state) : state
+    return isFunction(action) ? action(state) : action
 }
 
 /**
@@ -110,7 +110,7 @@ export function useReducer<S, A, I>(
     initialState: I,
     init?: (arg: I) => S,
 ) {
-    const [hookState, current] = getHookState(currentIndex++)
+    const [hookState, current] = getHookState<HookStateReducer>(currentIndex++)
 
     if (hookState.length === 0) {
         hookState[0] = init ? init(initialState) : initialState
@@ -123,7 +123,7 @@ export function useReducer<S, A, I>(
         }
     }
 
-    return hookState
+    return hookState as [S, Dispatch<A>]
 }
 
 /**
@@ -276,7 +276,7 @@ export function useContext<T>(contextType: ContextType<T>) {
         contextFiber = contextFiber.parent
 
     if (contextFiber) {
-        const hooks = contextFiber.hooks![HookType.List]!
+        const hooks = contextFiber.hooks![HookType.List]
         const [value] = hooks[0] as HookStateMemo<RefObject<T>>
         const [subscribers] = hooks[1] as HookStateMemo<Set<Subscriber>>
         subscribersSet = subscribers.add(triggerUpdate)
