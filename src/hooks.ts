@@ -215,10 +215,6 @@ function getHookState<T extends HookState = HookState>(
     index: number,
 ): [Partial<T>, Fiber] {
     const current = getCurrentFC()
-    if (!current) {
-        throw new Error('Invalid hook call')
-    }
-
     if (!current.hooks) {
         current.hooks = {
             [HookType.List]: [],
@@ -274,7 +270,7 @@ export function useContext<T>(contextType: ContextType<T>) {
         return () => subscribersSet && subscribersSet.delete(triggerUpdate)
     })
 
-    let contextFiber = getCurrentFC()?.parent
+    let contextFiber = getCurrentFC().parent
 
     while (contextFiber && contextFiber.type !== (contextType as any))
         contextFiber = contextFiber.parent

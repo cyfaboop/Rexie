@@ -20,8 +20,20 @@ export interface FC<P = IntrinsicAttributes> {
 }
 
 let currentFC: Fiber | undefined = undefined
-export const getCurrentFC = () => currentFC
 export const setCurrentFC = (fiber: Fiber) => (currentFC = fiber)
+
+/**
+ * Retrieves the current function component (FC).
+ *
+ * @throws Throws an error if the current function component is not set.
+ */
+export function getCurrentFC() {
+    if (!currentFC) {
+        throw new Error('Invalid hook call')
+    }
+
+    return currentFC
+}
 
 export function updateComponent(fiber: Fiber) {
     if (fiber.fc) {
