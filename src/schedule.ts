@@ -21,8 +21,10 @@ export function startTransition(action: () => void | Promise<void>) {
 }
 
 export function schedule(action: Action, onResolved?: () => void) {
-    taskQueue.push({ next: action, onResolved })
+    const task = { next: action, onResolved } as Task
+    taskQueue.push(task)
     scheduleWork(processTaskQueue)
+    return () => removeTask(task)
 }
 
 function processTaskQueue() {
@@ -31,11 +33,18 @@ function processTaskQueue() {
     while (firstTask() && !shouldYield()) {
         const task = firstTask()
         if (task.next instanceof Promise) {
-            processActionAsync(task, task.next)
+            taskQueue.shift()
+            taskQueue.push(task)
+            processAsyncAction(task, task.next)
         } else if (task.next) {
-            processActionSync(task, task.next)
+            const next = task.next?.()
+            if (next) {
+                task.next = next
+            } else {
+                resolveFirstTask()
+            }
         } else {
-            resolveSyncTask(task)
+            resolveFirstTask()
         }
     }
 
@@ -45,18 +54,13 @@ function processTaskQueue() {
     }
 }
 
-const firstTask = () => taskQueue[0]
-
 /**
  * Determines if the current task should yield control back to the main thread.
  * This function compares the current time with a predefined deadline.
  */
 export const shouldYield = () => performance.now() >= deadline
 
-async function processActionAsync(task: Task, action: Promise<Action>) {
-    taskQueue.shift()
-    taskQueue.push(task)
-
+function processAsyncAction(task: Task, action: Promise<Action>) {
     if (task.wait) return
     task.wait = true
 
@@ -80,34 +84,35 @@ async function processActionAsync(task: Task, action: Promise<Action>) {
 function resolveAsyncTask(task: Task) {
     const first = firstTask()
     if (first === task) {
-        resolveSyncTask(task)
+        resolveFirstTask()
     } else {
-        taskQueue.splice(
-            taskQueue.findIndex(t => t === task),
-            1,
-        )
+        removeTask(task, () => {
+            task.next = undefined
+            task.wait = undefined
+            first.onResolved = () => {
+                first.onResolved?.()
+                task.onResolved?.()
+            }
+        })
+    }
+}
+
+const firstTask = () => taskQueue[0]
+
+function resolveFirstTask() {
+    const task = taskQueue.shift()
+    if (task) {
         task.next = undefined
-        task.wait = undefined
-        first.onResolved = () => {
-            first.onResolved?.()
-            task.onResolved?.()
-        }
+        task.onResolved?.()
     }
 }
 
-function processActionSync(task: Task, action: () => Action | void) {
-    const next = action?.()
-    if (next) {
-        task.next = next
-    } else {
-        resolveSyncTask(task)
+function removeTask(task: Task, after?: () => void) {
+    const index = taskQueue.findIndex(t => t === task)
+    if (index > -1) {
+        taskQueue.splice(index, 1)
+        after?.()
     }
-}
-
-function resolveSyncTask(task: Task) {
-    taskQueue.shift()
-    task.next = undefined
-    task.onResolved?.()
 }
 
 function scheduleWork(work: () => void) {
