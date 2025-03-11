@@ -26,6 +26,6 @@ alpha
 
 ### Beyond PixiJS
 
-- **Renderer Agnostic** - Adapt new renderers with <100 lines of code
+- **Renderer Agnostic** - Create new renderers with <100 lines of code
 - **Framework Integration** - Built for seamless embedding in React/Vue/etc
 - **Universal Core** - Platform-agnostic core with browser/Canvas/WebGL extensions
