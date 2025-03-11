@@ -12,7 +12,7 @@ alpha
 - **React Hooks** - `useState`, `useEffect`...`useTransition`, `useSyncExternalStore`
 - **组件化开发** - 原生 JSX/TSX 支持，完善的类型提示系统
 - **专注核心逻辑** - 专注核心逻辑，把烦人的套路绘图代码放进Rexie
-- **sync/concurrent** - 每一次更新都能自选模式
+- **Sync/Concurrent** - 每一次更新都能自选模式
 
 ### 轻如鸿毛
 
@@ -23,4 +23,16 @@ alpha
 
 ### 不只是pixijs
 
-- **renderer切换** - 一百行搞定增删查改，极速适配
+- **renderer无关** - 一百行搞定增删查改，极速适配
+- **框架移植** - 用渲染和注销函数灵活嵌入任意其它框架
+- **平台无关** - 修改renderer即可移植其它平台
+
+## Hooks API
+
+### 无差异/小差异
+
+`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useImperativeHandle`, `useSyncExternalStore`
+
+### 差异
+
+`useTransition`: `startTransition`任务完成后会在最近的一个UI渲染更新后同步更新`isPending`，如果没有渲染任务则立即更新。

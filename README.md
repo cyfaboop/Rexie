@@ -29,3 +29,7 @@ alpha
 - **Renderer Agnostic** - Create new renderers with <100 lines of code
 - **Framework Integration** - Built for seamless embedding in React/Vue/etc
 - **Universal Core** - Platform-agnostic core with browser/Canvas/WebGL extensions
+
+## Hooks API
+
+`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useImperativeHandle`, `useSyncExternalStore`, `useTransition`
