@@ -7,10 +7,11 @@ const pages = [
     'Container',
     'Transparent Background',
     'Tinting',
-    'Cache As Bitmap',
-    'Blend Modes',
     'Particle Container',
-    'Simple Plane',
+    'Blend Modes',
+    'Mesh Plane',
+    'Render Group',
+    'Cache As Texture',
 ]
 
 const Components: Record<
@@ -20,6 +21,13 @@ const Components: Record<
     }>
 > = {
     Container: Container,
+    'Transparent Background': Container,
+    Tinting: Container,
+    'Particle Container': Container,
+    'Blend Modes': Container,
+    'Mesh Plane': Container,
+    'Render Group': Container,
+    'Cache As Texture': Container,
 }
 
 export const Basic: FC<{
@@ -32,7 +40,7 @@ export const Basic: FC<{
     )
 
     const DynamicComponent = useMemo(
-        () => Components[currentPage] || Container,
+        () => Components[currentPage],
         [currentPage],
     )
 

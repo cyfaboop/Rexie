@@ -7,6 +7,7 @@ const pages = [
     'Slots',
     'Scratch Card',
     'Star Warp',
+    'Three.js and PixiJS',
     'Mouse Trail',
     'Screen Shot',
     'Collision Detection',
