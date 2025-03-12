@@ -2,6 +2,18 @@ import * as PIXI from 'pixi.js'
 
 import { Fiber, IntrinsicAttributes } from './fiber'
 
+/*
+type IfEquals<T, U> =
+    (<G>() => G extends T ? 1 : 2) extends
+    (<G>() => G extends U ? 1 : 2) ? true : false;
+
+type WritableKeys<T> = {
+  [P in keyof T]-?: IfEquals<{ [Q in P]: T[P] }, { -readonly [Q in P]: T[P] }, P> extends true ? P : never;
+}[keyof T];
+
+type RemoveGetters<T> = Pick<T, WritableKeys<T>>;
+*/
+
 declare global {
     namespace JSX {
         export interface IntrinsicElements {
@@ -64,17 +76,95 @@ declare global {
         > extends IntrinsicAttributes,
                 Options<T>,
                 FederatedEventHandler {
+            /**
+             * The position of the container on the x axis relative to the local coordinates of the parent.
+             * An alias to position.x
+             */
             x?: number
+            /**
+             * The position of the container on the y axis relative to the local coordinates of the parent.
+             * An alias to position.y
+             */
             y?: number
+            /**
+             * The coordinate of the object relative to the local coordinates of the parent.
+             * @since 4.0.0
+             */
+            position?: PIXI.PointData
+            /**
+             * The rotation of the object in radians.
+             * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
+             */
+            rotation?: number
+            /**
+             * The angle of the object in degrees.
+             * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
+             */
+            angle?: number
+            /**
+             * The center of rotation, scaling, and skewing for this display object in its local space. The `position`
+             * is the projection of `pivot` in the parent's local space.
+             *
+             * By default, the pivot is the origin (0, 0).
+             * @since 4.0.0
+             */
+            pivot?: PIXI.PointData | number
+            /**
+             * The skew factor for the object in radians.
+             * @since 4.0.0
+             */
+            skew?: PIXI.PointData
+            /**
+             * The scale factors of this object along the local coordinate axes.
+             *
+             * The default scale is (1, 1).
+             * @since 4.0.0
+             */
+            scale?: PIXI.PointData | number
+            /**
+             * The width of the Container, setting this will actually modify the scale to achieve the value set.
+             * @memberof scene.Container#
+             */
             width?: number
+            /**
+             * The height of the Container, setting this will actually modify the scale to achieve the value set.
+             * @memberof scene.Container#
+             */
             height?: number
-            filterArea?: Rectangle
-            effects?: Effect[]
-            mask?: Mask
-            filters?: Filter | Filter[]
+            /** The opacity of the object. */
+            alpha?: number
+            /**
+             * The tint applied to the sprite. This is a hex value.
+             *
+             * A value of 0xFFFFFF will remove any tint effect.
+             * @default 0xFFFFFF
+             */
+            tint?: PIXI.ColorSource
+            /**
+             * The blend mode to be applied to the sprite. Apply a value of `'normal'` to reset the blend mode.
+             * @default 'normal'
+             */
+            blendMode?: PIXI.BLEND_MODES
+            /** The visibility of the object. If false the object will not be drawn, and the transform will not be updated. */
+            visible?: boolean
+            /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
+            renderable?: boolean
+            filterArea?: PIXI.Rectangle
+            effects?: PIXI.Effect[]
+            mask?: PIXI.Mask
+            filters?: PIXI.Filter | PIXI.Filter[]
             zIndex?: number
             sortDirty?: boolean
             sortableChildren?: boolean
+            /**
+             * An optional bounds area for this container. Setting this rectangle will stop the renderer
+             * from recursively measuring the bounds of each children and instead use this single boundArea.
+             * This is great for optimisation! If for example you have a 1000 spinning particles and you know they all sit
+             * within a specific bounds, then setting it will mean the renderer will not need to measure the
+             * 1000 children to find the bounds. Instead it will just use the bounds you set.
+             */
+            boundsArea?: PIXI.Rectangle
+            isRenderGroup?: boolean
         }
 
         type Options<T> = {
