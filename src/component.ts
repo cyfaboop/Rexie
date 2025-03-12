@@ -15,6 +15,7 @@ export interface ExternalFC<P = {}> extends FC<P> {
 }
 export interface FC<P = IntrinsicAttributes> {
     (props: P & IntrinsicAttributes): Children
+    id?: string
     memo?: boolean
     shouldUpdate?: (newProps: P, oldProps: P) => boolean
 }

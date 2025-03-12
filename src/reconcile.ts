@@ -1,4 +1,5 @@
 import { Fiber, Command } from './fiber'
+import { isFunction } from './util'
 
 export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
     let oldChild: Fiber | undefined
@@ -16,7 +17,6 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
 
         const newChildKT = keyAndType(newChild)
         const matchOldIndex = oldKeyIndexMap[keyAndType(newChild)]
-
         if (oldChild && newChildKT === keyAndType(oldChild)) {
             mergeOldFiber(newChild, oldChild)
             newChild.cmd = Command.UPDATE
@@ -59,5 +59,5 @@ function createKeyIndexMap(children: Fiber[]) {
 }
 
 function keyAndType(v: Fiber) {
-    return `${v.key?.toString() || ''}${v.type}`
+    return `${v.key?.toString() || ''}${isFunction(v.type) ? v.type.id : v.type}`
 }

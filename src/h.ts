@@ -13,6 +13,7 @@ import {
 import { Ref } from './ref'
 
 let fiberId = 0
+let componentId = 0
 
 export function h<T extends FC>(
     type: T,
@@ -68,20 +69,24 @@ export function isValidElement(obj: unknown): obj is Fiber {
     )
 }
 
-const createFiber = <T extends FC<any> | keyof JSX.IntrinsicElements>(
+function createFiber<T extends FC<any> | keyof JSX.IntrinsicElements>(
     type: T,
     props: PropsOf<T>,
     key?: Key,
     ref?: Ref,
-): Fiber => ({
-    $$typeof: FIBER_TYPE,
-    id: ++fiberId,
-    fc: isFunction(type) as any,
-    type,
-    key,
-    ref,
-    props,
-})
+): Fiber {
+    // function namespace
+    if (isFunction(type) && !type.id) type.id = `${type.name}_${++componentId}`
+    return {
+        $$typeof: FIBER_TYPE,
+        id: ++fiberId,
+        fc: isFunction(type) as any,
+        type,
+        key,
+        ref,
+        props,
+    }
+}
 
 export function Fragment(props: IntrinsicPropsOf<FC>) {
     // For JSX compatibility
