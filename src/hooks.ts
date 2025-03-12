@@ -112,7 +112,6 @@ export function useReducer<S, A, I>(
     hookState[1] = (action: A) => {
         const nextState = reducer(hookState[0], action)
         if (hookState[0] !== nextState) {
-            console.log(hookState, current)
             hookState[0] = nextState
             update(current)
         }
