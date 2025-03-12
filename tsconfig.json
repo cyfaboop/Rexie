@@ -28,7 +28,8 @@
         "types": ["node"],
         "rootDir": ".",
         "paths": {
-            "src/*": ["src/*"]
+            "src/*": ["src/*"],
+            "rexie": ["src/index"]
         },
         "jsx": "react",
         "jsxFactory": "h",

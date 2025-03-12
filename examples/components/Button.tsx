@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js'
-
-import { h, FC, memo, useCallback, useRef, useEffect, useState } from 'src'
+import { h, FC, memo, useCallback, useRef, useEffect, useState } from 'rexie'
 
 export const buttonStyle = new PIXI.TextStyle({
     fill: '#fff',
@@ -9,7 +8,71 @@ export const buttonStyle = new PIXI.TextStyle({
     fontFamily: 'consolas',
 })
 
-export function calcButtonTextSize(text: string) {
+interface ButtonLayoutProps {
+    x: number
+    y: number
+    width: number
+    height: number
+    textWidth: number
+    textHeight: number
+    text: string
+}
+
+export function generateButtonLayoutProps(
+    texts: string[],
+    width: number,
+    height: number,
+    screenWidth: number,
+    margin = 5,
+    padding = 10,
+) {
+    const propsArr: ButtonLayoutProps[] = []
+
+    const calcY = (line: number) => {
+        return (line - 1) * (height + margin)
+    }
+
+    const { line } = texts.reduce(
+        (prev, cur) => {
+            let x = prev.x
+            let line = prev.line
+            let text = calcButtonTextSize(cur)
+            let btnWidth = Math.max(text.width, width) + padding
+            const props = {
+                key: cur,
+                text: cur,
+                x,
+                y: calcY(line),
+                width: btnWidth,
+                height,
+                textWidth: text.width,
+                textHeight: text.height,
+            }
+            const box = btnWidth + margin + x
+            if (box > screenWidth) {
+                x = 0
+                line += 1
+                props.x = x
+                props.y = calcY(line)
+                x += btnWidth + margin
+            } else {
+                x = box
+            }
+
+            propsArr.push(props)
+
+            return {
+                x,
+                line,
+            }
+        },
+        { x: 0, line: 1 },
+    )
+
+    return { propsArr, line, lineWrapY: calcY(line + 1) }
+}
+
+function calcButtonTextSize(text: string) {
     const textMetrics = PIXI.CanvasTextMetrics.measureText(text, buttonStyle)
     return {
         width: textMetrics.width,

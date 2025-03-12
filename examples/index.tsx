@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
+import { h, render } from 'rexie'
 
-import { h, render } from 'src'
 import { Examples } from './Examples'
 
 async function mount() {
