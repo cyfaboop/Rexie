@@ -15,9 +15,40 @@ declare global {
 
         export interface TextElement
             extends ContainerElement<PIXI.TextOptions> {
+            /** The anchor point of the text. */
+            anchor?: PIXI.PointData | number
+            /** Set the copy for the text object. To split a line you can use '\n'. */
             text?: PIXI.TextString
-            style?: PIXI.TextStyle
+            /**
+             * The resolution / device pixel ratio of the canvas.
+             * @default 1
+             */
             resolution?: number
+            /**
+             * Set the style of the text.
+             *
+             * Set up an event listener to listen for changes on the style object and mark the text as dirty.
+             *
+             * If setting the `style` can also be partial {@link PIXI.AnyTextStyleOptions}.
+             * @type {
+             * PIXI.TextStyle |
+             * Partial<PIXI.TextStyle> |
+             * PIXI.TextStyleOptions |
+             * PIXI.HTMLTextStyle |
+             * Partial<PIXI.HTMLTextStyle> |
+             * PIXI.HTMLTextStyleOptions
+             * }
+             */
+            style?:
+                | PIXI.TextStyle
+                | Partial<PIXI.TextStyle>
+                | PIXI.TextStyleOptions
+            /** Whether or not to round the x/y position. */
+            roundPixels?: boolean
+            /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
+            width?: number
+            /** The height of the sprite, setting this will actually modify the scale to achieve the value set. */
+            height?: number
         }
 
         export interface SpriteElement
@@ -35,6 +66,15 @@ declare global {
                 FederatedEventHandler {
             x?: number
             y?: number
+            width?: number
+            height?: number
+            filterArea?: Rectangle
+            effects?: Effect[]
+            mask?: Mask
+            filters?: Filter | Filter[]
+            zIndex?: number
+            sortDirty?: boolean
+            sortableChildren?: boolean
         }
 
         type Options<T> = {
