@@ -2,7 +2,7 @@ import { RefObject } from './ref'
 import { isFunction } from './util'
 import { Fiber } from './fiber'
 import { update } from './render'
-import { FC, getCurrentFC } from './component'
+import { ExternalFC, getCurrentFC } from './component'
 
 export interface Hooks {
     /**
@@ -37,9 +37,16 @@ export type EffectSetup = (() => () => any) | (() => any)
 export type Dependencies = ReadonlyArray<unknown>
 export type StateUpdater<S> = S | ((prevState: S) => S)
 
-export type Subscriber = () => void
-export interface ContextType<T> extends FC<{ value: T }> {
-    initialValue: T
+type Subscriber = () => void
+type ContextStack<T> = T[]
+interface ContextType<T> {
+    Provider: ExternalFC<{
+        value: T
+    }>
+    Consumer: ExternalFC<{
+        children: (value: T) => JSX.Element
+    }>
+    useContext: () => T
 }
 
 let currentIndex = 0
@@ -234,6 +241,55 @@ function isChanged(a: Dependencies | undefined | null, b: Dependencies) {
     )
 }
 
+export function createContext<T>(defaultValue: T) {
+    const contextStack: ContextStack<T> = []
+    const subscribers = new Set<Subscriber>()
+
+    const getCurrentValue = (): T => {
+        return contextStack.length > 0
+            ? contextStack[contextStack.length - 1]
+            : defaultValue
+    }
+
+    const Provider = (({ value, children }) => {
+        useEffect(() => {
+            contextStack.push(value)
+            subscribers.forEach(notify => notify())
+            return () => {
+                contextStack.pop()
+                subscribers.forEach(notify => notify())
+            }
+        }, [value])
+
+        return children
+    }) as ExternalFC<{
+        value: T
+    }>
+
+    const Consumer = (({ children }) => {
+        const [value, setValue] = useState<T>(getCurrentValue)
+
+        useEffect(() => {
+            const notify = () => setValue(getCurrentValue())
+            subscribers.add(notify)
+            return () => subscribers.delete(notify)
+        })
+
+        return children(value)
+    }) as ExternalFC<{
+        children: (value: T) => JSX.Element
+    }>
+
+    return {
+        Provider,
+        Consumer,
+        useContext: () => {
+            const [value] = useState(getCurrentValue)
+            return value
+        },
+    }
+}
+
 /**
  * Returns the current context value, as given by the nearest context provider for the given context.
  * When the provider updates, this Hook will trigger a rerender with the latest context value.
@@ -241,25 +297,5 @@ function isChanged(a: Dependencies | undefined | null, b: Dependencies) {
  * @param context The context you want to use
  */
 export function useContext<T>(contextType: ContextType<T>) {
-    let subscribersSet: Set<Subscriber> | undefined
-    const triggerUpdate = useState(undefined)[1] as Subscriber
-
-    useEffect(() => {
-        return () => subscribersSet && subscribersSet.delete(triggerUpdate)
-    })
-
-    let contextFiber = getCurrentFC().parent
-
-    while (contextFiber && contextFiber.type !== (contextType as any))
-        contextFiber = contextFiber.parent
-
-    if (contextFiber) {
-        const hooks = contextFiber.hooks![HookType.List]
-        const [value] = hooks[0] as HookStateMemo<RefObject<T>>
-        const [subscribers] = hooks[1] as HookStateMemo<Set<Subscriber>>
-        subscribersSet = subscribers.add(triggerUpdate)
-        return value.current
-    } else {
-        return contextType.initialValue
-    }
+    return contextType.useContext()
 }

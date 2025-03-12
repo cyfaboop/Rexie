@@ -8,8 +8,9 @@ export {
     useLayout,
     useLayout as useLayoutEffect,
     useContext,
+    createContext,
 } from './hooks'
-export { h, memo, Fragment, isValidElement, createContext } from './h'
+export { h, memo, Fragment, isValidElement } from './h'
 export { render } from './render'
 export { type ExternalFC as FC } from './component'
 export { shouldYield, startTransition } from './schedule'
