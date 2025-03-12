@@ -20,7 +20,7 @@ export interface FC<P = IntrinsicAttributes> {
 }
 
 let currentFC: Fiber | undefined = undefined
-export const setCurrentFC = (fiber: Fiber) => (currentFC = fiber)
+export const setCurrentFC = (fiber?: Fiber) => (currentFC = fiber)
 
 /**
  * Retrieves the current function component (FC).

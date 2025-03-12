@@ -63,18 +63,11 @@ export function useState<S = undefined>(initialState?: S | (() => S)) {
         S | (() => S) | undefined,
         StateUpdater<S | (() => S) | undefined>
     >(
-        invokeAction,
+        (prev, action) => (isFunction(action) ? action(prev) : action),
         // React will call your initializer function when initializing the component,
         // and store its return value as the initial state.
         isFunction(initialState) ? initialState() : initialState,
     )
-}
-
-function invokeAction<S>(
-    state: S | (() => S) | undefined,
-    action: StateUpdater<S | (() => S) | undefined>,
-) {
-    return isFunction(action) ? action(state) : action
 }
 
 /**
@@ -114,12 +107,14 @@ export function useReducer<S, A, I>(
 
     if (hookState.length === 0) {
         hookState[0] = init ? init(initialState) : initialState
-        hookState[1] = (action: A) => {
-            const nextState = reducer(hookState[0], action)
-            if (hookState[0] !== nextState) {
-                hookState[0] = nextState
-                update(current)
-            }
+    }
+
+    hookState[1] = (action: A) => {
+        const nextState = reducer(hookState[0], action)
+        if (hookState[0] !== nextState) {
+            console.log(hookState, current)
+            hookState[0] = nextState
+            update(current)
         }
     }
 
