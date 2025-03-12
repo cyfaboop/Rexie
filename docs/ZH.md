@@ -44,7 +44,7 @@ alpha
 
 ### props的先后顺序
 
-PixiJS的部分setter存在先后调用顺序的说法，props非正整数键会按照创建顺序遍历，参考(MDN)[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in#description]。
+PixiJS的部分setter存在先后调用顺序的说法，props非正整数键会按照创建顺序遍历，参考 [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in#description)
 
 ```ts
 // 1. text先于width设置或放到构造函数的options里，正常生效
