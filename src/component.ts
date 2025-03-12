@@ -53,7 +53,12 @@ function updateFC(fiber: FiberFC) {
 }
 
 export function isMemoizedComponent(fiber: Fiber) {
-    if (fiber.fc && fiber.type.memo && fiber.old?.props) {
+    if (
+        fiber.fc &&
+        fiber.type.memo &&
+        fiber.type === fiber.old?.type &&
+        fiber.old.props
+    ) {
         let shouldUpdate = fiber.type.shouldUpdate || havePropsChanged
         if (!shouldUpdate(fiber.props, fiber.old.props)) {
             return true
