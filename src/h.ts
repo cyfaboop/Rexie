@@ -11,6 +11,7 @@ import {
     PropsOf,
 } from './fiber'
 import { Ref } from './ref'
+import { ContextType, Subscriber, useMemo, useRef } from './hooks'
 
 let fiberId = 0
 let componentId = 0
@@ -76,7 +77,7 @@ function createFiber<T extends FC<any> | keyof JSX.IntrinsicElements>(
     ref?: Ref,
 ): Fiber {
     // function namespace
-    if (isFunction(type) && !type.id) type.id = `${type.name}_${++componentId}`
+    if (isFunction(type) && !type.id) type.id = generateComponentId(type)
     return {
         $$typeof: FIBER_TYPE,
         id: ++fiberId,
@@ -86,6 +87,27 @@ function createFiber<T extends FC<any> | keyof JSX.IntrinsicElements>(
         ref,
         props,
     }
+}
+
+export function createContext<T>(initialValue: T) {
+    const contextComponent: ContextType<T> = ({ value, children }) => {
+        const valueRef = useRef(value)
+        const subscribers = useMemo(() => new Set<Subscriber>())
+
+        if (valueRef.current !== value) {
+            valueRef.current = value
+            subscribers.forEach(subscriber => subscriber())
+        }
+
+        return children
+    }
+    contextComponent.id = generateComponentId(contextComponent)
+    contextComponent.initialValue = initialValue
+    return contextComponent
+}
+
+const generateComponentId = (c: Function) => {
+    return `${c.name}_${++componentId}`
 }
 
 export function Fragment(props: IntrinsicPropsOf<FC>) {

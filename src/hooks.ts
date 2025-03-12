@@ -37,8 +37,8 @@ export type EffectSetup = (() => () => any) | (() => any)
 export type Dependencies = ReadonlyArray<unknown>
 export type StateUpdater<S> = S | ((prevState: S) => S)
 
-type Subscriber = () => void
-interface ContextType<T> extends FC<{ value: T }> {
+export type Subscriber = () => void
+export interface ContextType<T> extends FC<{ value: T }> {
     initialValue: T
 }
 
@@ -232,22 +232,6 @@ function isChanged(a: Dependencies | undefined | null, b: Dependencies) {
         a.length !== b.length ||
         b.some((arg, index) => !Object.is(arg, a[index]))
     )
-}
-
-export function createContext<T>(initialValue: T) {
-    const contextComponent: ContextType<T> = ({ value, children }) => {
-        const valueRef = useRef(value)
-        const subscribers = useMemo(() => new Set<Subscriber>())
-
-        if (valueRef.current !== value) {
-            valueRef.current = value
-            subscribers.forEach(subscriber => subscriber())
-        }
-
-        return children
-    }
-    contextComponent.initialValue = initialValue
-    return contextComponent
 }
 
 /**
