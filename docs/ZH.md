@@ -35,4 +35,44 @@ alpha
 
 ### 差异
 
-`useTransition`: `startTransition`任务完成后会在最近的一个UI渲染更新后同步更新`isPending`，如果没有渲染任务则立即更新。
+`useTransition`: `startTransition`任务完成后会在最近的一个UI渲染更新后更新`isPending`，如果没有渲染任务则立即更新。
+
+## PIXI问题
+
+### props的先后顺序
+
+PixiJS的部分setter存在先后调用顺序的说法，props非正整数键会按照创建顺序遍历，参考(MDN)[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in#description]。
+
+```ts
+// 1. text先于width设置或放到构造函数的options里，正常生效
+<text
+    options={{
+        text,
+    }}
+    width={width}
+/>
+<text
+    text={text}
+    width={width}
+/>
+<text
+    options={{
+        text,
+        width,
+    }}
+/>
+// 2. width先于text，text不会改变宽度
+<text
+    options={{
+        width,
+    }}
+    text={text}
+/>
+<text
+    width={width}
+    text={text}
+/>
+<text
+    width={width}
+>{text}</text>
+```

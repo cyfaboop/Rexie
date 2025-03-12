@@ -32,4 +32,50 @@ alpha
 
 ## Hooks API
 
-`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useImperativeHandle`, `useSyncExternalStore`, `useTransition`
+### No/Minor Differences
+
+`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useImperativeHandle`, `useSyncExternalStore`
+
+### Differences
+
+`useTransition`: After the `startTransition` task completes, `isPending` will be updated after the nearest UI render update. If there is no rendering task, it updates immediately.
+
+## PIXI Issues
+
+### Order of Props
+
+Some setters in PixiJS have execution order dependencies. Props with non-positive-integer keys are traversed in creation order, refer to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in#description).
+
+```ts
+// 1. When text is set before width or placed in constructor options, width affect text
+<text
+    options={{
+        text,
+    }}
+    width={width}
+/>
+<text
+    text={text}
+    width={width}
+/>
+<text
+    options={{
+        width,
+        text,
+    }}
+/>
+// 2. When width is set before text, width won't affect text
+<text
+    options={{
+        width,
+    }}
+    text={text}
+/>
+<text
+    width={width}
+    text={text}
+/>
+<text
+    width={width}
+>{text}</text>
+```
