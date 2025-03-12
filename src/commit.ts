@@ -13,9 +13,6 @@ export function commitWork(fiber?: FiberFinish) {
     } else {
         if (fiber.cmd & Command.PLACEMENT) {
             placeNode(fiber.parentNode, fiber.node, fiber.old?.node)
-            if (fiber.old) {
-                unmountFiber(fiber.old)
-            }
         }
         if (fiber.cmd & Command.UPDATE) {
             updateNode(fiber.node, fiber.props, fiber.old?.props || {})
@@ -23,7 +20,6 @@ export function commitWork(fiber?: FiberFinish) {
     }
 
     fiber.cmd = Command.NONE
-    fiber.old = undefined
     attachRef(fiber.ref, fiber.node)
     commitWork(fiber.child)
     commitDeletions(fiber)
@@ -32,8 +28,8 @@ export function commitWork(fiber?: FiberFinish) {
 }
 
 function commitDeletions(fiber: FiberFinish) {
-    fiber.deletions?.forEach(deletion => unmountFiber(deletion))
-    fiber.deletions = undefined
+    fiber.deletions.forEach(deletion => unmountFiber(deletion))
+    fiber.deletions = []
 }
 
 export function unmountFiber(fiber: Fiber | FiberFinish) {

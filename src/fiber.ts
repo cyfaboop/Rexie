@@ -23,7 +23,7 @@ interface FiberBaseFinish extends FiberBase {
     parent?: FiberFinish
     sibling?: FiberFinish
     children?: FiberFinish[]
-    deletions?: FiberFinish[]
+    deletions: FiberFinish[]
 }
 
 export type Fiber = FiberFC | FiberHost
@@ -63,7 +63,7 @@ interface FiberBase {
     sibling?: Fiber
     children?: Fiber[]
     rootNode?: RexieNode
-    deletions?: Fiber[]
+    deletions: Fiber[]
     parentNode?: RexieNode
 }
 

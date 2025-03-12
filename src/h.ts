@@ -86,6 +86,7 @@ function createFiber<T extends FC<any> | keyof JSX.IntrinsicElements>(
         key,
         ref,
         props,
+        deletions: [],
     }
 }
 

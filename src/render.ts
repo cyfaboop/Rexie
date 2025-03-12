@@ -26,6 +26,7 @@ export function update(fiber: Fiber, sync?: boolean): (() => void) | void
 export function update(fiber: Fiber, sync = false) {
     // Commit changes only if the node is marked as dirty
     if (!fiber.dirty) {
+        console.log(fiber)
         fiber.dirty = true
         if (sync) {
             performSyncWork(fiber)
