@@ -1,16 +1,16 @@
 import { h, FC, useMemo, useState, memo } from 'rexie'
 
 import { Button, generateButtonLayoutProps } from '../../components/Button'
-import { Container } from './Container'
+import { Slots } from './Slots'
 
 const pages = [
-    'Container',
-    'Transparent Background',
-    'Tinting',
-    'Cache As Bitmap',
-    'Blend Modes',
-    'Particle Container',
-    'Simple Plane',
+    'Slots',
+    'Scratch Card',
+    'Star Warp',
+    'Mouse Trail',
+    'Screen Shot',
+    'Collision Detection',
+    'Spinners',
 ]
 
 const Components: Record<
@@ -19,20 +19,20 @@ const Components: Record<
         screenWidth: number
     }>
 > = {
-    Container: Container,
+    Slots: Slots,
 }
 
-export const Basic: FC<{
+export const Advanced: FC<{
     screenWidth: number
 }> = memo(({ screenWidth }) => {
-    const [currentPage, setCurrentPage] = useState('Container')
+    const [currentPage, setCurrentPage] = useState('Slots')
     const { propsArr, lineWrapY } = useMemo(
         () => generateButtonLayoutProps(pages, 60, 30, screenWidth),
         [screenWidth],
     )
 
     const DynamicComponent = useMemo(
-        () => Components[currentPage] || Container,
+        () => Components[currentPage] || Slots,
         [currentPage],
     )
 
