@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 
-import { FC, h, useMemo, useState } from 'src'
+import { FC, h, useEffect, useMemo, useState } from 'src'
 import { Button, calcButtonTextSize } from './components/Button'
 
 const width = 60
@@ -40,9 +40,10 @@ function calcY(line: number) {
 }
 
 export const Examples: FC<{
-    screen: PIXI.Rectangle
-}> = ({ screen }) => {
+    app: PIXI.Application<PIXI.Renderer>
+}> = ({ app }) => {
     const [currentPage, setCurrentPage] = useState('Basic')
+    const [screenWidth, setScreenWidth] = useState(app.screen.width)
     const { propsArr, line } = useMemo(() => {
         const propsArr: PageProps[] = []
 
@@ -63,11 +64,12 @@ export const Examples: FC<{
                     textHeight: text.height,
                 }
                 const box = btnWidth + margin + x
-                if (box > screen.width) {
+                if (box > screenWidth) {
                     x = 0
                     line += 1
                     props.x = x
                     props.y = calcY(line)
+                    x += btnWidth + margin
                 } else {
                     x = box
                 }
@@ -83,7 +85,22 @@ export const Examples: FC<{
         )
 
         return { propsArr, line }
-    }, [screen.width])
+    }, [screenWidth])
+
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width } = entry.contentRect
+                setScreenWidth(width)
+            }
+        })
+
+        resizeObserver.observe(document.body)
+        return () => {
+            resizeObserver.unobserve(document.body)
+            resizeObserver.disconnect()
+        }
+    }, [app])
 
     return (
         <container>

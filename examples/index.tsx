@@ -5,12 +5,12 @@ import { Examples } from './Examples'
 
 async function mount() {
     const app = new PIXI.Application()
-    await app.init({ background: '#ffffff', resizeTo: window })
+    await app.init({ background: '#ffffff', resizeTo: document.body })
     const container = new PIXI.Container()
     app.stage.addChild(container)
     document.body.appendChild(app.canvas)
 
-    render(<Examples screen={app.screen} />, container)
+    render(<Examples app={app} />, container)
 }
 
 mount()
