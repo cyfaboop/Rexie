@@ -1,11 +1,11 @@
 import { h, FC, memo } from 'rexie'
 
 export const Slots: FC<{
-    screenWidth: number
-}> = memo(({ screenWidth }) => {
+    screen: { width: number; height: number }
+}> = memo(({ screen }) => {
     return (
         <container>
-            <graphics width={screenWidth} />
+            <graphics width={screen.width} />
         </container>
     )
 })

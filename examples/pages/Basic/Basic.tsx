@@ -1,11 +1,11 @@
 import { h, FC, useMemo, useState, memo } from 'rexie'
 
-import { Button, generateButtonLayoutProps } from '../../components/Button'
+import { Button, useLayoutData } from '../../components/Button'
+import { Tinting } from './Tinting'
 import { Container } from './Container'
 
 const pages = [
     'Container',
-    'Transparent Background',
     'Tinting',
     'Particle Container',
     'Blend Modes',
@@ -17,12 +17,11 @@ const pages = [
 const Components: Record<
     string,
     FC<{
-        screenWidth: number
+        screen: { width: number; height: number }
     }>
 > = {
     Container: Container,
-    'Transparent Background': Container,
-    Tinting: Container,
+    Tinting: Tinting,
     'Particle Container': Container,
     'Blend Modes': Container,
     'Mesh Plane': Container,
@@ -31,13 +30,10 @@ const Components: Record<
 }
 
 export const Basic: FC<{
-    screenWidth: number
-}> = memo(({ screenWidth }) => {
+    screen: { width: number; height: number }
+}> = memo(({ screen }) => {
     const [currentPage, setCurrentPage] = useState('Container')
-    const { propsArr, lineWrapY } = useMemo(
-        () => generateButtonLayoutProps(pages, 60, 30, screenWidth),
-        [screenWidth],
-    )
+    const { propsArr, lineWrapY, childScreen } = useLayoutData(pages, screen)
 
     const DynamicComponent = useMemo(
         () => Components[currentPage],
@@ -56,7 +52,7 @@ export const Basic: FC<{
                 />
             ))}
             <container y={lineWrapY}>
-                <DynamicComponent screenWidth={screenWidth} />
+                <DynamicComponent screen={childScreen} />
             </container>
         </container>
     )

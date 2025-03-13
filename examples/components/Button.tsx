@@ -1,5 +1,14 @@
 import * as PIXI from 'pixi.js'
-import { h, FC, memo, useCallback, useRef, useEffect, useState } from 'rexie'
+import {
+    h,
+    FC,
+    memo,
+    useCallback,
+    useRef,
+    useEffect,
+    useState,
+    useMemo,
+} from 'rexie'
 
 export const buttonStyle = new PIXI.TextStyle({
     fill: '#fff',
@@ -70,6 +79,22 @@ export function generateButtonLayoutProps(
     )
 
     return { propsArr, line, lineWrapY: calcY(line + 1) }
+}
+
+export function useLayoutData(
+    pages: string[],
+    screen: { width: number; height: number },
+) {
+    return useMemo(() => {
+        const props = generateButtonLayoutProps(pages, 60, 30, screen.width)
+        return {
+            ...props,
+            childScreen: {
+                width: screen.width,
+                height: screen.height - props.lineWrapY,
+            },
+        }
+    }, [screen.width])
 }
 
 function calcButtonTextSize(text: string) {

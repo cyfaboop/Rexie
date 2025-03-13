@@ -1,5 +1,3 @@
-import { AppContext } from 'examples'
-import { Loading } from '../../components/Loading'
 import * as PIXI from 'pixi.js'
 import {
     h,
@@ -7,19 +5,20 @@ import {
     useRef,
     useEffect,
     useTransition,
-    useState,
     useContext,
-    FC,
     useCallback,
+    FC,
 } from 'rexie'
 
-export const Container: FC<{
+import { AppContext } from 'examples'
+import { Loading } from '../../components/Loading'
+
+export const Tinting: FC<{
     screen: { width: number; height: number }
 }> = memo(({ screen }) => {
-    const texture = useRef<PIXI.Texture>()
     const app = useContext(AppContext)
+    const texture = useRef<PIXI.Texture>()
     const container = useRef<PIXI.Container>()
-    const [bunnies, setBunnies] = useState<PIXI.PointData[]>([])
     const [isPending, startTransitioin] = useTransition()
     const animate = useCallback(
         (time: PIXI.Ticker) => {
@@ -36,18 +35,9 @@ export const Container: FC<{
     useEffect(() => {
         startTransitioin(async () => {
             texture.current = await PIXI.Assets.load(
-                'https://pixijs.com/assets/bunny.png',
+                'https://pixijs.com/assets/eggHead.png',
             )
-
-            const arr: PIXI.PointData[] = []
-            for (let i = 0; i < 25; i++) {
-                arr.push({
-                    x: (i % 5) * 40,
-                    y: Math.floor(i / 5) * 40,
-                })
-            }
-            setBunnies(arr)
-            app.ticker.add(animate)
+            app?.ticker.add(animate)
         })
 
         return () => {
@@ -56,25 +46,30 @@ export const Container: FC<{
     }, [])
 
     useEffect(() => {
-        if (container.current) {
-            container.current.pivot.x = container.current.width / 2
-            container.current.pivot.y = container.current.height / 2
-        }
-    }, [bunnies])
+        if (!container.current) return
+        container.current.pivot.x = container.current.width / 2
+        container.current.pivot.y = container.current.height / 2
+    }, [container.current])
 
     return (
-        <container x={screen.width / 2} y={200}>
+        <container>
             <container ref={container}>
                 {isPending ? (
                     <Loading />
                 ) : (
-                    bunnies.map(bunny => (
-                        <sprite
-                            options={texture.current}
-                            x={bunny.x}
-                            y={bunny.y}
-                        />
-                    ))
+                    new Array(20)
+                        .fill(null)
+                        .map(_ => (
+                            <sprite
+                                options={texture.current}
+                                anchor={0.5}
+                                scale={0.8 + Math.random() * 0.3}
+                                x={Math.random() * screen.width}
+                                y={Math.random() * screen.height}
+                                tint={Math.random() * 0xffffff}
+                                rotation={Math.random() * Math.PI * 2}
+                            />
+                        ))
                 )}
             </container>
         </container>

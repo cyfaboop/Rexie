@@ -1,21 +1,22 @@
 import * as PIXI from 'pixi.js'
-import { h, render } from 'rexie'
+import { h, render, createContext } from 'rexie'
 
 import { Examples } from './Examples'
-import { AppContext } from './AppContext'
+
+const app = new PIXI.Application()
+export const AppContext = createContext<PIXI.Application<PIXI.Renderer>>(app)
 
 async function mount() {
-    const app = new PIXI.Application()
-    await app.init({ background: '#ffffff', resizeTo: document.body })
     const container = new PIXI.Container()
     app.stage.addChild(container)
-    document.body.appendChild(app.canvas)
     render(
         <AppContext.Provider value={app}>
-            <Examples app={app} />
+            <Examples />
         </AppContext.Provider>,
         container,
     )
+    await app.init({ background: '#ffffff', resizeTo: document.body })
+    document.body.appendChild(app.canvas)
 }
 
 mount()

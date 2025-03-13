@@ -1,9 +1,9 @@
-import * as PIXI from 'pixi.js'
-import { FC, h, useEffect, useMemo, useState } from 'rexie'
+import { FC, h, useContext, useEffect, useMemo, useState } from 'rexie'
 
-import { Button, generateButtonLayoutProps } from './components/Button'
+import { Button, useLayoutData } from './components/Button'
 import { Basic } from './pages/Basic/Basic'
 import { Advanced } from './pages/Advanced/Advanced'
+import { AppContext } from 'examples'
 
 const pages = [
     'Basic',
@@ -22,26 +22,33 @@ const pages = [
     'Offscreen Canvas',
 ]
 
-const Components: Record<string, FC<{ screenWidth: number }>> = {
+const Components: Record<
+    string,
+    FC<{ screen: { width: number; height: number } }>
+> = {
     Basic: Basic,
     Advanced: Advanced,
 }
 
-export const Examples: FC<{
-    app: PIXI.Application<PIXI.Renderer>
-}> = ({ app }) => {
+export const Examples = () => {
     const [currentPage, setCurrentPage] = useState('Basic')
-    const [screenWidth, setScreenWidth] = useState(app.screen.width)
-    const { propsArr, lineWrapY } = useMemo(
-        () => generateButtonLayoutProps(pages, 60, 30, screenWidth),
-        [screenWidth],
+    const DynamicComponent = useMemo(
+        () => Components[currentPage] || Basic,
+        [currentPage],
     )
+
+    const app = useContext(AppContext)
+    const [screen, setScreen] = useState({
+        width: app.screen.width,
+        height: app.screen.height,
+    })
+    const { propsArr, lineWrapY, childScreen } = useLayoutData(pages, screen)
 
     useEffect(() => {
         const resizeObserver = new ResizeObserver(entries => {
             for (const entry of entries) {
-                const { width } = entry.contentRect
-                setScreenWidth(width)
+                const { width, height } = entry.contentRect
+                setScreen({ width, height })
             }
         })
 
@@ -51,11 +58,6 @@ export const Examples: FC<{
             resizeObserver.disconnect()
         }
     }, [app])
-
-    const DynamicComponent = useMemo(
-        () => Components[currentPage] || Basic,
-        [currentPage],
-    )
 
     return (
         <container>
@@ -69,7 +71,7 @@ export const Examples: FC<{
                 />
             ))}
             <container y={lineWrapY}>
-                <DynamicComponent screenWidth={screenWidth} />
+                <DynamicComponent screen={childScreen} />
             </container>
         </container>
     )
