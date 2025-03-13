@@ -43,9 +43,6 @@ interface ContextType<T> {
     Provider: ExternalFC<{
         value: T
     }>
-    Consumer: ExternalFC<{
-        children: (value: T) => JSX.Element
-    }>
     useContext: () => T
 }
 
@@ -135,7 +132,7 @@ export function useReducer<S, A, I>(
  * @param dependencies If present, effect will only activate if the values in the list change (using Object.is).
  */
 export function useEffect(setup: EffectSetup, dependencies?: Dependencies) {
-    useEffectImplement(setup, dependencies, HookType.Effect)
+    useEffectImplement(setup, HookType.Effect, dependencies)
 }
 
 /**
@@ -149,13 +146,13 @@ export function useEffect(setup: EffectSetup, dependencies?: Dependencies) {
  * @param dependencies If present, effect will only activate if the values in the list change (using Object.is).
  */
 export function useLayout(setup: EffectSetup, dependencies?: Dependencies) {
-    useEffectImplement(setup, dependencies, HookType.Layout)
+    useEffectImplement(setup, HookType.Layout, dependencies)
 }
 
 function useEffectImplement(
     setup: EffectSetup,
-    dependencies: Dependencies = [],
     type: HookType.Effect | HookType.Layout,
+    dependencies?: Dependencies,
 ) {
     const [hook, current] = getHookState<HookStateEffect>(currentIndex++)
     if (isChanged(hook[1], dependencies)) {
@@ -233,10 +230,10 @@ function getHookState<T extends HookState = HookState>(
     return [list[index], current] as any
 }
 
-function isChanged(a: Dependencies | undefined | null, b: Dependencies) {
+function isChanged(a?: Dependencies, b?: Dependencies) {
     return (
         !a ||
-        a.length !== b.length ||
+        a.length !== b?.length ||
         b.some((arg, index) => !Object.is(arg, a[index]))
     )
 }
@@ -245,44 +242,30 @@ export function createContext<T>(defaultValue: T) {
     const contextStack: ContextStack<T> = []
     const subscribers = new Set<Subscriber>()
 
-    const getCurrentValue = (): T => {
+    const getCurrentValue = () => {
         return contextStack.length > 0
             ? contextStack[contextStack.length - 1]
             : defaultValue
     }
 
-    const Provider = (({ value, children }) => {
-        useEffect(() => {
-            contextStack.push(value)
-            subscribers.forEach(notify => notify())
-            return () => {
-                contextStack.pop()
-                subscribers.forEach(notify => notify())
-            }
-        }, [value])
-
-        return children
-    }) as ExternalFC<{
-        value: T
-    }>
-
-    const Consumer = (({ children }) => {
-        const [value, setValue] = useState<T>(getCurrentValue)
-
-        useEffect(() => {
-            const notify = () => setValue(getCurrentValue())
-            subscribers.add(notify)
-            return () => subscribers.delete(notify)
-        })
-
-        return children(value)
-    }) as ExternalFC<{
-        children: (value: T) => JSX.Element
-    }>
-
     return {
-        Provider,
-        Consumer,
+        Provider: (({ value, children }) => {
+            useMemo(() => {
+                contextStack.push(value)
+                subscribers.forEach(notify => notify())
+            }, [value])
+
+            useEffect(() => {
+                return () => {
+                    contextStack.pop()
+                    subscribers.forEach(notify => notify())
+                }
+            }, [value])
+
+            return children
+        }) as ExternalFC<{
+            value: T
+        }>,
         useContext: () => {
             const [value] = useState(getCurrentValue)
             return value
