@@ -3,6 +3,8 @@ export type Action = (() => Action) | Promise<Action> | void
 export interface Task {
     next: Action
     wait?: boolean
+    cancel?: boolean
+    waitTasks?: Task[]
     onResolved?: () => void
 }
 
@@ -24,7 +26,10 @@ export function schedule(action: Action, onResolved?: () => void) {
     const task = { next: action, onResolved } as Task
     taskQueue.push(task)
     scheduleWork(processTaskQueue)
-    return () => removeTask(task)
+    return () => {
+        task.cancel = true
+        removeTask(task)
+    }
 }
 
 function processTaskQueue() {
@@ -89,10 +94,8 @@ function resolveAsyncTask(task: Task) {
         removeTask(task, () => {
             task.next = undefined
             task.wait = undefined
-            first.onResolved = () => {
-                first.onResolved?.()
-                task.onResolved?.()
-            }
+            if (!first.waitTasks) first.waitTasks = []
+            first.waitTasks.push(task)
         })
     }
 }
@@ -104,6 +107,7 @@ function resolveFirstTask() {
     if (task) {
         task.next = undefined
         task.onResolved?.()
+        task.waitTasks?.forEach(task => !task.cancel && task.onResolved?.())
     }
 }
 
