@@ -64,7 +64,28 @@ declare global {
         }
 
         export interface SpriteElement
-            extends ContainerElement<PIXI.SpriteOptions | PIXI.Texture> {}
+            extends ContainerElement<PIXI.SpriteOptions | PIXI.Texture> {
+            /** The texture that the sprite is using. */
+            texture?: PIXI.Texture
+            /**
+             * The anchor sets the origin point of the sprite. The default value is taken from the {@link Texture}
+             * and passed to the constructor.
+             *
+             * The default is `(0,0)`, this means the sprite's origin is the top left.
+             *
+             * Setting the anchor to `(0.5,0.5)` means the sprite's origin is centered.
+             *
+             * Setting the anchor to `(1,1)` would mean the sprite's origin point will be the bottom right corner.
+             *
+             * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
+             * @example
+             * import { Sprite } from 'pixi.js';
+             *
+             * const sprite = new Sprite({texture: Texture.WHITE});
+             * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
+             */
+            anchor?: PIXI.PointData | number
+        }
 
         export interface GraphicsElement
             extends ContainerElement<
