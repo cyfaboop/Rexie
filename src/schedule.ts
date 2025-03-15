@@ -37,19 +37,49 @@ function processTaskQueue() {
 
     while (firstTask() && !shouldYield()) {
         const task = firstTask()
+        if (task.cancel || !task.next) {
+            resolveFirstTask()
+            return
+        }
+
         if (task.next instanceof Promise) {
             taskQueue.shift()
             taskQueue.push(task)
-            processAsyncAction(task, task.next)
-        } else if (task.next) {
-            const next = task.next?.()
-            if (next) {
-                task.next = next
-            } else {
-                resolveFirstTask()
-            }
+            if (task.wait) return
+            task.wait = true
+
+            task.next
+                .then(next => {
+                    if (next) {
+                        task.next = next
+                    } else {
+                        resolveAsyncTask(task)
+                    }
+                })
+                .catch(err => {
+                    task.cancel = true
+                    resolveAsyncTask(task)
+
+                    if (__DEV__) {
+                        console.error(err)
+                    }
+                })
         } else {
-            resolveFirstTask()
+            try {
+                const next = task.next()
+                if (next) {
+                    task.next = next
+                } else {
+                    resolveFirstTask()
+                }
+            } catch (err) {
+                task.cancel = true
+                resolveFirstTask()
+
+                if (__DEV__) {
+                    console.error(err)
+                }
+            }
         }
     }
 
@@ -65,27 +95,6 @@ function processTaskQueue() {
  */
 export const shouldYield = () => performance.now() >= deadline
 
-function processAsyncAction(task: Task, action: Promise<Action>) {
-    if (task.wait) return
-    task.wait = true
-
-    action
-        .then(next => {
-            if (next) {
-                task.next = next
-            } else {
-                resolveAsyncTask(task)
-            }
-        })
-        .catch(err => {
-            resolveAsyncTask(task)
-
-            if (__DEV__) {
-                console.error(err)
-            }
-        })
-}
-
 function resolveAsyncTask(task: Task) {
     const first = firstTask()
     if (first === task) {
@@ -94,8 +103,10 @@ function resolveAsyncTask(task: Task) {
         removeTask(task, () => {
             task.next = undefined
             task.wait = undefined
-            if (!first.waitTasks) first.waitTasks = []
-            first.waitTasks.push(task)
+            if (!task.cancel) {
+                if (!first.waitTasks) first.waitTasks = []
+                first.waitTasks.push(task)
+            }
         })
     }
 }
@@ -106,7 +117,7 @@ function resolveFirstTask() {
     const task = taskQueue.shift()
     if (task) {
         task.next = undefined
-        task.onResolved?.()
+        !task.cancel && task.onResolved?.()
         task.waitTasks?.forEach(task => !task.cancel && task.onResolved?.())
     }
 }

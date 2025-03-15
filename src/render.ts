@@ -24,7 +24,8 @@ export function update(fiber: Fiber, sync: true): void
 export function update(fiber: Fiber, sync: false): (() => void) | void
 export function update(fiber: Fiber, sync?: boolean): (() => void) | void
 export function update(fiber: Fiber, sync = false) {
-    // Commit changes only if the node is marked as dirty
+    // Commit changes only if the node is marked as dirty.
+    // concurrent mode will defer the update call to ensure all synchronous setters are fully executed.
     if (!fiber.dirty) {
         fiber.dirty = true
         if (sync) {

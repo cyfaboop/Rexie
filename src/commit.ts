@@ -3,7 +3,7 @@ import { placeNode, removeNode, RexieNode, updateNode } from './pixi'
 import { HookState, HookType } from './hooks'
 import { isFunction } from './util'
 import { Fiber, FiberFinish, Command } from './fiber'
-import { startTransition } from './schedule'
+import { schedule } from './schedule'
 
 export function commitWork(fiber?: FiberFinish) {
     if (!fiber) return
@@ -20,6 +20,7 @@ export function commitWork(fiber?: FiberFinish) {
     }
 
     fiber.cmd = Command.NONE
+    fiber.old = undefined
     attachRef(fiber.ref, fiber.node)
     commitWork(fiber.child)
     commitDeletions(fiber)
@@ -33,13 +34,15 @@ function commitDeletions(fiber: FiberFinish) {
 }
 
 export function unmountFiber(fiber: Fiber | FiberFinish) {
+    // Prevent updates to an unmounted fiber
+    fiber.dirty = true
     if (fiber.fc) {
         fiber.hooks && unmountEffects(fiber.hooks[HookType.List])
         fiber.children?.forEach(unmountFiber)
     } else {
-        fiber.parentNode &&
-            fiber.node &&
+        if (fiber.parentNode && fiber.node) {
             removeNode(fiber.parentNode, fiber.node)
+        }
         attachRef(fiber.ref, undefined)
     }
 }
@@ -53,7 +56,7 @@ function attachRef(ref?: Ref, node?: RexieNode) {
 function commitHookEffects(fiber: Fiber) {
     if (fiber.hooks) {
         updateEffects(fiber.hooks[HookType.Layout])
-        startTransition(
+        schedule(
             () => fiber.hooks && updateEffects(fiber.hooks[HookType.Effect]),
         )
     }
@@ -62,9 +65,10 @@ function commitHookEffects(fiber: Fiber) {
 function updateEffects(effects: HookState[]) {
     unmountEffects(effects)
     effects.forEach(e => (e[2] = e[0]?.()))
+    // Only the new effect from the next change will trigger an effect update
     effects.length = 0
 }
 
 function unmountEffects(effects: HookState[]) {
-    effects.forEach(e => e[2] && e[2]())
+    effects.forEach(e => e[2]?.())
 }
