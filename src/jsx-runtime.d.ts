@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
 
+import { Ref } from './ref'
 import { Fiber, IntrinsicAttributes } from './fiber'
 
 /*
@@ -27,6 +28,7 @@ declare global {
 
         export interface TextElement
             extends ContainerElement<PIXI.TextOptions> {
+            ref?: Ref<PIXI.Text>
             /** The anchor point of the text. */
             anchor?: PIXI.PointData | number
             /** Set the copy for the text object. To split a line you can use '\n'. */
@@ -65,6 +67,7 @@ declare global {
 
         export interface SpriteElement
             extends ContainerElement<PIXI.SpriteOptions | PIXI.Texture> {
+            ref?: Ref<PIXI.Sprite>
             /** The texture that the sprite is using. */
             texture?: PIXI.Texture
             /**
@@ -90,13 +93,16 @@ declare global {
         export interface GraphicsElement
             extends ContainerElement<
                 PIXI.GraphicsOptions | PIXI.GraphicsContext
-            > {}
+            > {
+            ref?: Ref<PIXI.Graphics>
+        }
 
         export interface ContainerElement<
             T = PIXI.ContainerOptions<PIXI.ContainerChild>,
-        > extends IntrinsicAttributes,
+        > extends Omit<IntrinsicAttributes, 'ref'>,
                 Options<T>,
                 FederatedEventHandler {
+            ref?: Ref<PIXI.Container>
             /**
              * The position of the container on the x axis relative to the local coordinates of the parent.
              * An alias to position.x
