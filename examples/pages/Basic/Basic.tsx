@@ -3,6 +3,7 @@ import { h, FC, useMemo, useState, memo } from 'rexie'
 import { Button, useLayoutData } from '../../components/Button'
 import { Tinting } from './Tinting'
 import { Container } from './Container'
+import { Particle } from './Particle'
 
 const pages = [
     'Container',
@@ -22,7 +23,7 @@ const Components: Record<
 > = {
     Container: Container,
     Tinting: Tinting,
-    'Particle Container': Container,
+    'Particle Container': Particle,
     'Blend Modes': Container,
     'Mesh Plane': Container,
     'Render Group': Container,
