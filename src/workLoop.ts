@@ -20,7 +20,13 @@ export function performConcurrentWork(fiber?: Fiber) {
 }
 
 function performUnitOfWork(fiber: Fiber) {
-    if (!isMemoizedComponent(fiber)) {
+    if (isMemoizedComponent(fiber)) {
+        fiber.memo = true
+    } else {
+        if (fiber.memo) {
+            fiber.memo = false
+        }
+
         updateComponent(fiber)
         if (fiber.child) {
             return fiber.child

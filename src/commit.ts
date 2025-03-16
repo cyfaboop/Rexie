@@ -20,12 +20,20 @@ export function commitWork(fiber?: FiberFinish) {
     }
 
     fiber.cmd = Command.NONE
-    fiber.old = undefined
+    if (fiber.old?.old) fiber.old.old = undefined
     attachRef(fiber.ref, fiber.node)
-    commitWork(fiber.child)
+    commitSiblingWork(fiber.child)
     commitDeletions(fiber)
-    commitWork(fiber.sibling)
+    commitSiblingWork(fiber.sibling)
     commitHookEffects(fiber)
+}
+
+function commitSiblingWork(fiber?: FiberFinish) {
+    if (fiber?.memo) {
+        commitSiblingWork(fiber.sibling)
+    } else {
+        commitWork(fiber)
+    }
 }
 
 function commitDeletions(fiber: FiberFinish) {

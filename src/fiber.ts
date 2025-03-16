@@ -55,6 +55,7 @@ interface FiberBase {
     ref?: Ref
     cmd?: Command
     old?: Fiber
+    memo?: boolean
     node?: RexieNode
     hooks?: Hooks
     child?: Fiber
