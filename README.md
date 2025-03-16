@@ -42,6 +42,20 @@ alpha
 
 ## PIXI Issues
 
+### About the `options` Property
+
+Corresponds to the constructor's `options`. This property is only set during initialization and will not update with any subsequent changes.  
+```ts
+<text options={textStyle} width={200} />
+// equivalent to
+const text = new PIXI.Text(textStyle)
+text.width = 200
+```
+
+### Handling a Massive Number of `ViewContainer`
+
+If there is a need to create thousands or even more `ViewContainer`, the performance of virtual DOM will be extremely poor. Compared to `react-dom`, it is more prone to stack overflow due to the deeper function call chains in PixiJS's API. Although `rexie` can adopt queue-based updates like Preact, the performance will still be severely degraded. Therefore, it is recommended to use `useRef` to obtain a `Container` reference and manually `addChild` `ViewContainer`. When the component unmounts, these `ViewContainer` will still be automatically destroyed, so no manual cleanup is required.
+
 ### Order of Props
 
 Some setters in PixiJS have execution order dependencies. Props with non-positive-integer keys are traversed in creation order, refer to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in#description).

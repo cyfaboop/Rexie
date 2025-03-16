@@ -42,6 +42,20 @@ alpha
 
 ## PIXI问题
 
+### 关于options属性
+
+对应构造函数的options，该属性只有初始化，任何改变都不做更新。
+```ts
+<text options={textStyle} width={200} />
+// 等同于
+const text = new PIXI.Text(textStyle)
+text.width = 200
+```
+
+### 极多的`ViewContainer`
+
+如果有成千上万个甚至更多的`ViewContainer`创建需求，虚拟DOM的性能会非常糟糕，而且会比react-dom更容易堆栈爆炸，因为PixiJS的接口有更深的函数调用。尽管rexie可以改为preact那样的队列更新，但其性能仍然会非常糟糕，所以最好使用`useRef`获取`Container`引用并手动`addChild` `ViewContainer`，组件注销时依然会自动销毁它们，不必担心。
+
 ### props的先后顺序
 
 PixiJS的部分setter存在先后调用顺序的说法，props非正整数键会按照创建顺序遍历，参考 [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in#description)
