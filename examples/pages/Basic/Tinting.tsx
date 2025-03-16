@@ -64,7 +64,9 @@ export const Tinting: FC<{
 
     useEffect(() => {
         app.ticker.add(animate)
-        return () => app.ticker.remove(animate)
+        return () => {
+            app.ticker.remove(animate)
+        }
     }, [dudes.current])
 
     return (

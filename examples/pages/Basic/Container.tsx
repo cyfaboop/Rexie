@@ -1,5 +1,3 @@
-import { AppContext } from 'examples'
-import { Loading } from '../../components/Loading'
 import * as PIXI from 'pixi.js'
 import {
     h,
@@ -12,6 +10,9 @@ import {
     FC,
     useCallback,
 } from 'rexie'
+
+import { AppContext } from 'examples'
+import { Loading } from '../../components/Loading'
 
 export const Container: FC<{
     screen: { width: number; height: number }
@@ -51,7 +52,7 @@ export const Container: FC<{
         })
 
         return () => {
-            app?.ticker.remove(animate)
+            app.ticker.remove(animate)
         }
     }, [])
 
