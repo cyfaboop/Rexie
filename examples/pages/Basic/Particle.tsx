@@ -62,7 +62,6 @@ export const Particle: FC<{
                 dude.x += Math.sin(dude.rotation) * dude.scale.y
                 dude.y += Math.cos(dude.rotation) * dude.scale.y
 
-                // Wrap the maggots
                 if (dude.x < dudeBounds.x) {
                     dude.x += dudeBounds.width
                 } else if (dude.x > dudeBounds.x + dudeBounds.width) {

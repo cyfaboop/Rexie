@@ -4,6 +4,7 @@ import { Button, useLayoutData } from '../../components/Button'
 import { Tinting } from './Tinting'
 import { Container } from './Container'
 import { Particle } from './Particle'
+import { BlendModes } from './BlendModes'
 
 const pages = [
     'Container',
@@ -24,7 +25,7 @@ const Components: Record<
     Container: Container,
     Tinting: Tinting,
     'Particle Container': Particle,
-    'Blend Modes': Container,
+    'Blend Modes': BlendModes,
     'Mesh Plane': Container,
     'Render Group': Container,
     'Cache As Texture': Container,
