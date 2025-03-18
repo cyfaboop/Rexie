@@ -5,6 +5,8 @@ import { Tinting } from './Tinting'
 import { Container } from './Container'
 import { Particle } from './Particle'
 import { BlendModes } from './BlendModes'
+import { MeshPlane } from './MeshPlane'
+import { RenderGroup } from './RenderGroup'
 
 const pages = [
     'Container',
@@ -26,8 +28,8 @@ const Components: Record<
     Tinting: Tinting,
     'Particle Container': Particle,
     'Blend Modes': BlendModes,
-    'Mesh Plane': Container,
-    'Render Group': Container,
+    'Mesh Plane': MeshPlane,
+    'Render Group': RenderGroup,
     'Cache As Texture': Container,
 }
 
