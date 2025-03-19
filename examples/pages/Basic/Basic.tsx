@@ -7,6 +7,7 @@ import { Particle } from './Particle'
 import { BlendModes } from './BlendModes'
 import { MeshPlane } from './MeshPlane'
 import { RenderGroup } from './RenderGroup'
+import { CacheAsTexture } from './CacheAsTexture'
 
 const pages = [
     'Container',
@@ -30,7 +31,7 @@ const Components: Record<
     'Blend Modes': BlendModes,
     'Mesh Plane': MeshPlane,
     'Render Group': RenderGroup,
-    'Cache As Texture': Container,
+    'Cache As Texture': CacheAsTexture,
 }
 
 export const Basic: FC<{
