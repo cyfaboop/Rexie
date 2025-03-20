@@ -9,6 +9,7 @@ import {
     useEffect,
     useTransition,
     useContext,
+    useCallback,
 } from 'rexie'
 
 const alienFrames = [
@@ -56,14 +57,6 @@ export const CacheAsTexture: FC<{
             container.current.addChild(alien)
         }
 
-        const onClick = () => {
-            if (!container.current) return
-            container.current.cacheAsTexture(
-                container.current.isCachedAsTexture,
-            )
-        }
-
-        container.current.on('pointertap', onClick)
         let count = 0
         const animate = () => {
             if (!container.current) return
@@ -82,13 +75,17 @@ export const CacheAsTexture: FC<{
         app.ticker.add(animate)
 
         return () => {
-            app.stage.removeEventListener('pointertap', onClick)
             app.ticker.remove(animate)
         }
     }, [json.current, container.current])
 
+    const onClick = useCallback(() => {
+        if (!container.current) return
+        container.current.cacheAsTexture(container.current.isCachedAsTexture)
+    }, [container.current])
+
     return (
-        <container ref={container}>
+        <container onPointertap={onClick} ref={container}>
             {isPending ? <Loading /> : undefined}
         </container>
     )
