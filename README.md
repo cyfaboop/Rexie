@@ -34,13 +34,17 @@ alpha
 
 ### No/Minor Differences
 
-`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useImperativeHandle`, `useSyncExternalStore`
+`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useContext`, `useImperativeHandle`, `useSyncExternalStore`
 
 ### Differences
 
 `useTransition`: After the `startTransition` task completes, `isPending` will be updated after the nearest UI render update. If there is no rendering task, it updates immediately.
 
 ## PIXI Issues
+
+### Textures
+
+Textures will not be automatically destroyed. You need to manually manage their lifecycle.
 
 ### About the `options` Property
 

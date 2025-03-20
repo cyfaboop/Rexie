@@ -34,13 +34,17 @@ alpha
 
 ### 无差异/小差异
 
-`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useImperativeHandle`, `useSyncExternalStore`
+`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useContext`, `useImperativeHandle`, `useSyncExternalStore`
 
 ### 差异
 
 `useTransition`: `startTransition`任务完成后会在最近的一个UI渲染更新后更新`isPending`，如果没有渲染任务则立即更新。
 
 ## PIXI问题
+
+### Texture不会销毁
+
+请手动管理`Texture`的生命周期。
 
 ### 关于options属性
 
