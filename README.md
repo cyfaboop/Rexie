@@ -3,6 +3,9 @@
 <p align="center">
   <a href="https://github.com/wooloo26/rexie/tree/main/docs/ZH.md">中文</a>
 </p>
+<div align="center">
+    <img width="600" alt="preview" src="https://raw.githubusercontent.com/wooloo26/rexie/refs/heads/main/docs/examples.gif">
+</div>
 
 ## Quick Start
 

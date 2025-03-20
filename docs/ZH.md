@@ -1,8 +1,8 @@
 <h1 align="center">Rexie</h1>
 <p align="center">轻量级 PixiJS 框架 | 类 React Hooks | 3KB 极简内核</p>
-<a href="hhttps://github.com/wooloo26/rexie">
-    <img width="600" alt="Warp Terminal product preview" src="https://raw.githubusercontent.com/wooloo26/rexie/refs/heads/main/docs/examples.gif">
-</a>
+<div align="center">
+    <img width="600" alt="preview" src="https://raw.githubusercontent.com/wooloo26/rexie/refs/heads/main/docs/examples.gif">
+</div>
 
 ## 快速开始
 
