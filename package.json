@@ -1,7 +1,35 @@
 {
-    "private": true,
     "version": "0.0.1",
     "type": "module",
+    "description": "3kB React-like for PixiJS: Sync/Concurrent rendering, full PixiJS API access",
+    "files": [
+        "dist"
+    ],
+    "main": "dist/rexie.umd.js",
+    "unpkg": "dist/rexie.iife.js",
+    "jsdelivr": "dist/rexie.iife.js",
+    "module": "./dist/rexie.es.js",
+    "exports": {
+        ".": {
+            "import": "./dist/rexie.es.js",
+            "require": "./dist/rexie.umd.js"
+        }
+    },
+    "types": "./dist/types/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wooloo26/rexie"
+    },
+    "keywords": [
+        "react",
+        "pixi"
+    ],
+    "author": "wooloo26",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/wooloo26/rexie/issues"
+    },
+    "homepage": "https://github.com/wooloo26/rexie#readme",
     "scripts": {
         "dev": "node scripts/dev.js",
         "build": "node scripts/build.js",
@@ -36,7 +64,7 @@
         "rimraf": "^6.0.1",
         "simple-git-hooks": "^2.11.1",
         "typescript": "~5.7.3",
-        "vitest": "^3.0.8"
+        "vitest": "^3.0.9"
     },
     "packageManager": "pnpm@10.2.1+sha512.398035c7bd696d0ba0b10a688ed558285329d27ea994804a52bad9167d8e3a72bcb993f9699585d3ca25779ac64949ef422757a6c31102c12ab932e5cbe5cc92",
     "dependencies": {
