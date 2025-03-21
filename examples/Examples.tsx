@@ -1,4 +1,4 @@
-import { FC, h, useContext, useEffect, useMemo, useState } from 'rexie'
+import { FC, h, useContext, useEffect, useState } from 'rexie'
 
 import { Button, useLayoutData } from './components/Button'
 import { Basic } from './pages/Basic/Basic'
@@ -31,18 +31,15 @@ const Components: Record<
 }
 
 export const Examples = () => {
-    const [currentPage, setCurrentPage] = useState('Basic')
-    const DynamicComponent = useMemo(
-        () => Components[currentPage] || Basic,
-        [currentPage],
-    )
-
     const app = useContext(AppContext)
     const [screen, setScreen] = useState({
         width: app.screen.width,
         height: app.screen.height,
     })
     const { propsArr, lineWrapY, childScreen } = useLayoutData(pages, screen)
+
+    const [currentPage, setCurrentPage] = useState('Basic')
+    const DynamicComponent = Components[currentPage] || Basic
 
     useEffect(() => {
         const resizeObserver = new ResizeObserver(entries => {
@@ -57,7 +54,7 @@ export const Examples = () => {
             resizeObserver.unobserve(document.body)
             resizeObserver.disconnect()
         }
-    }, [app])
+    }, [])
 
     return (
         <container>

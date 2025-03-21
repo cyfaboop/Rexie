@@ -1,4 +1,4 @@
-import { h, FC, useMemo, useState, memo } from 'rexie'
+import { h, FC, useState, memo } from 'rexie'
 
 import { Button, useLayoutData } from '../../components/Button'
 import { Tinting } from './Tinting'
@@ -40,10 +40,7 @@ export const Basic: FC<{
     const [currentPage, setCurrentPage] = useState('Container')
     const { propsArr, lineWrapY, childScreen } = useLayoutData(pages, screen)
 
-    const DynamicComponent = useMemo(
-        () => Components[currentPage],
-        [currentPage],
-    )
+    const DynamicComponent = Components[currentPage]
 
     return (
         <container>

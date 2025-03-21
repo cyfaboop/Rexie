@@ -16,8 +16,8 @@ export const RenderGroup: FC<{
     screen: { width: number; height: number }
 }> = memo(({ screen }) => {
     const app = useContext(AppContext)
-    const treeTexture = useRef<PIXI.Texture>()
     const container = useRef<PIXI.Container>()
+    const treeTexture = useRef<PIXI.Texture>()
     const [isPending, startTransition] = useTransition()
 
     useEffect(() => {
@@ -30,7 +30,9 @@ export const RenderGroup: FC<{
 
     useEffect(() => {
         if (!treeTexture.current || !container.current) return
+
         const worldSize = 5000
+
         for (let i = 0; i < 100000; i++) {
             const yPos = Math.random() * worldSize
 
@@ -71,10 +73,10 @@ export const RenderGroup: FC<{
 
         app.ticker.add(animate)
         return () => {
-            app.ticker.remove(animate)
             app.canvas.removeEventListener('mousemove', move)
+            app.ticker.remove(animate)
         }
-    }, [treeTexture.current, container.current])
+    }, [isPending])
 
     return (
         <container ref={container} isRenderGroup={true}>

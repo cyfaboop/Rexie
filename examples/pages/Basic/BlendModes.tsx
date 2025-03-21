@@ -7,11 +7,46 @@ import {
     useTransition,
     FC,
     useContext,
-    useMemo,
 } from 'rexie'
 
 import { Loading } from '../../components/Loading'
 import { AppContext } from 'examples'
+
+const allBlendModes: PIXI.BLEND_MODES[] = [
+    'inherit',
+    'normal',
+    'add',
+    'multiply',
+    'screen',
+    'darken',
+    'lighten',
+    'erase',
+    'color-dodge',
+    'color-burn',
+    'linear-burn',
+    'linear-dodge',
+    'linear-light',
+    'hard-light',
+    'soft-light',
+    'pin-light',
+    'difference',
+    'exclusion',
+    'overlay',
+    'saturation',
+    'color',
+    'luminosity',
+    'normal-npm',
+    'add-npm',
+    'screen-npm',
+    'none',
+    'subtract',
+    'divide',
+    'vivid-light',
+    'hard-mix',
+    'negation',
+    'min',
+    'max',
+]
 
 export const BlendModes: FC<{
     screen: { width: number; height: number }
@@ -19,33 +54,7 @@ export const BlendModes: FC<{
     const app = useContext(AppContext)
     const pandaTexture = useRef<PIXI.Texture>()
     const rainbowGradient = useRef<PIXI.Texture>()
-    const allBlendModes = useMemo<PIXI.BLEND_MODES[]>(() => [
-        'normal',
-        'add',
-        'screen',
-        'darken',
-        'lighten',
-        'color-dodge',
-        'color-burn',
-        'linear-burn',
-        'linear-dodge',
-        'linear-light',
-        'hard-light',
-        'soft-light',
-        'pin-light',
-        'difference',
-        'exclusion',
-        'overlay',
-        'saturation',
-        'color',
-        'luminosity',
-        'add-npm',
-        'subtract',
-        'divide',
-        'vivid-light',
-        'hard-mix',
-        'negation',
-    ])
+
     const size = 800 / 5
     const wrapper = useRef<PIXI.Container>()
     const pandas = useRef<PIXI.Sprite[]>([])
@@ -63,9 +72,9 @@ export const BlendModes: FC<{
 
     useEffect(() => {
         if (
-            !rainbowGradient.current ||
+            !wrapper.current ||
             !pandaTexture.current ||
-            !wrapper.current
+            !rainbowGradient.current
         )
             return
 
@@ -123,7 +132,7 @@ export const BlendModes: FC<{
         return () => {
             app.ticker.remove(animate)
         }
-    }, [rainbowGradient.current, pandaTexture.current, wrapper.current])
+    }, [isPending])
 
     return (
         <container>

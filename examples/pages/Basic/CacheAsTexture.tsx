@@ -23,24 +23,24 @@ export const CacheAsTexture: FC<{
     screen: { width: number; height: number }
 }> = memo(() => {
     const app = useContext(AppContext)
-    const aliens = useRef<PIXI.Sprite[]>([])
 
-    const json = useRef()
     const container = useRef<PIXI.Container>()
     const [isPending, startTransition] = useTransition()
 
     useEffect(() => {
         startTransition(async () => {
-            json.current = await PIXI.Assets.load(
+            await PIXI.Assets.load(
                 'https://pixijs.com/assets/spritesheet/monsters.json',
             )
         })
     }, [])
 
     useEffect(() => {
-        if (!json.current || !container.current) return
+        if (isPending) return
+        if (!container.current) return
         container.current.x = app.screen.width / 2
         container.current.y = app.screen.height / 2
+        const aliens: PIXI.Sprite[] = []
 
         for (let i = 0; i < 100; i++) {
             const frameName = alienFrames[i % 4]
@@ -53,7 +53,7 @@ export const CacheAsTexture: FC<{
             alien.y = Math.random() * app.screen.height - app.screen.height / 2
             alien.anchor.x = 0.5
             alien.anchor.y = 0.5
-            aliens.current.push(alien)
+            aliens.push(alien)
             container.current.addChild(alien)
         }
 
@@ -61,7 +61,7 @@ export const CacheAsTexture: FC<{
         const animate = () => {
             if (!container.current) return
             for (let i = 0; i < 100; i++) {
-                const alien = aliens.current[i]
+                const alien = aliens[i]
 
                 alien.rotation += 0.1
             }
@@ -72,17 +72,16 @@ export const CacheAsTexture: FC<{
             container.current.scale.y = Math.sin(count)
             container.current.rotation += 0.01
         }
-        app.ticker.add(animate)
 
+        app.ticker.add(animate)
         return () => {
             app.ticker.remove(animate)
         }
-    }, [json.current, container.current])
+    }, [isPending])
 
     const onClick = useCallback(() => {
-        if (!container.current) return
-        container.current.cacheAsTexture(container.current.isCachedAsTexture)
-    }, [container.current])
+        container.current?.cacheAsTexture(container.current.isCachedAsTexture)
+    }, [])
 
     return (
         <container onPointertap={onClick} ref={container}>

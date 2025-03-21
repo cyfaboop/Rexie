@@ -94,7 +94,7 @@ export function useLayoutData(
                 height: screen.height - props.lineWrapY,
             },
         }
-    }, [screen.width])
+    }, [screen.width, screen.height])
 }
 
 function calcButtonTextSize(text: string) {

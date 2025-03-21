@@ -16,10 +16,8 @@ import { AppContext } from 'examples'
 export const Particle: FC<{
     screen: { width: number; height: number }
 }> = memo(({ screen }) => {
-    const texture = useRef<PIXI.Texture>()
     const app = useContext(AppContext)
-    const dudes = useRef<PIXI.Sprite[]>([])
-    const tick = useRef(0)
+    const texture = useRef<PIXI.Texture>()
     const container = useRef<PIXI.Container>()
     const dudeBounds = useMemo(() => {
         const dudeBoundsPadding = 100
@@ -29,8 +27,9 @@ export const Particle: FC<{
             screen.width + dudeBoundsPadding * 2,
             screen.height + dudeBoundsPadding * 2,
         )
-    })
+    }, [screen.width, screen.height])
     const [isPending, startTransitioin] = useTransition()
+
     useEffect(() => {
         startTransitioin(async () => {
             texture.current = await PIXI.Assets.load(
@@ -41,8 +40,11 @@ export const Particle: FC<{
 
     useEffect(() => {
         if (!container.current || !texture.current) return
-        const totalSprites = 10000
-        for (let i = 0; i < totalSprites; i++) {
+
+        let tick = 0
+        const dudes: PIXI.Sprite[] = []
+
+        for (let i = 0; i < 10000; i++) {
             const dude = new PIXI.Sprite(texture.current)
             dude.anchor.set(0.5)
             dude.scale.set(0.8 + Math.random() * 0.3)
@@ -50,14 +52,14 @@ export const Particle: FC<{
             dude.y = Math.random() * app.screen.height
             dude.tint = Math.random() * 0x808080
             dude.rotation = Math.random() * Math.PI * 2
-            dudes.current.push(dude)
+            dudes.push(dude)
             container.current.addChild(dude)
         }
 
         const animate = () => {
-            for (let i = 0; i < dudes.current.length; i++) {
-                const dude = dudes.current[i]
-                dude.scale.y = 0.95 + Math.sin(tick.current) * 0.05
+            for (let i = 0; i < dudes.length; i++) {
+                const dude = dudes[i]
+                dude.scale.y = 0.95 + Math.sin(tick) * 0.05
                 dude.rotation += 0.01
                 dude.x += Math.sin(dude.rotation) * dude.scale.y
                 dude.y += Math.cos(dude.rotation) * dude.scale.y
@@ -74,20 +76,19 @@ export const Particle: FC<{
                     dude.y -= dudeBounds.height
                 }
 
-                tick.current += 1
+                tick += 1
             }
         }
 
         app.ticker.add(animate)
         return () => {
             app.ticker.remove(animate)
-            tick.current = 0
         }
-    }, [texture.current, container.current])
+    }, [isPending])
 
     return (
-        <container>
-            {isPending ? <Loading /> : <container ref={container} />}
+        <container ref={container}>
+            {isPending ? <Loading /> : undefined}
         </container>
     )
 })

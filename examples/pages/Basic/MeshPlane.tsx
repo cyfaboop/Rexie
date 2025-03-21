@@ -53,7 +53,7 @@ export const MeshPlane: FC<{
         return () => {
             app.ticker.remove(animate)
         }
-    }, [plane.current, container.current])
+    }, [isPending])
 
     return (
         <container ref={container}>
