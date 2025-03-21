@@ -1,5 +1,6 @@
 <h1 align="center">Rexie</h1>
 <p align="center">PixiJS | React Hooks | 3kB</p>
+<p align="center">PixiJS version 8.8.1</p>
 <p align="center">
   <a href="https://github.com/wooloo26/rexie/tree/main/docs/ZH.md">中文</a>
 </p>
@@ -10,6 +11,32 @@
 ## Quick Start
 
 alpha
+
+```tsx
+import * as PIXI from 'pixi.js'
+import { h, render, createContext } from 'rexie'
+
+import App from './App'
+
+const app = new PIXI.Application()
+export const AppContext = createContext(app)
+
+async function mount() {
+    const container = new PIXI.Container()
+    render(
+        <AppContext.Provider value={app}>
+            <App />
+        </AppContext.Provider>,
+        container,
+    )
+
+    app.stage.addChild(container)
+    await app.init({ background: '#ffffff', resizeTo: document.body })
+    document.body.appendChild(app.canvas)
+}
+
+mount()
+```
 
 ## Features
 
@@ -43,7 +70,7 @@ alpha
 
 `useTransition`: After the `startTransition` task completes, `isPending` will be updated after the nearest UI render update. If there is no rendering task, it updates immediately.
 
-## PIXI Issues
+## FAQ
 
 ### Textures
 
@@ -51,7 +78,8 @@ Textures will not be automatically destroyed. You need to manually manage their 
 
 ### About the `options` Property
 
-Corresponds to the constructor's `options`. This property is only set during initialization and will not update with any subsequent changes.  
+Corresponds to the constructor's `options`. This property is only set during initialization and will not update with any subsequent changes.
+
 ```ts
 <text options={textStyle} width={200} />
 // equivalent to

@@ -1,5 +1,6 @@
 <h1 align="center">Rexie</h1>
 <p align="center">轻量级 PixiJS 框架 | 类 React Hooks | 3KB 极简内核</p>
+<p align="center">PixiJS version 8.8.1</p>
 <div align="center">
     <img width="600" alt="preview" src="https://raw.githubusercontent.com/wooloo26/rexie/refs/heads/main/docs/examples.gif">
 </div>
@@ -7,6 +8,32 @@
 ## 快速开始
 
 alpha
+
+```tsx
+import * as PIXI from 'pixi.js'
+import { h, render, createContext } from 'rexie'
+
+import App from './App'
+
+const app = new PIXI.Application()
+export const AppContext = createContext(app)
+
+async function mount() {
+    const container = new PIXI.Container()
+    render(
+        <AppContext.Provider value={app}>
+            <App />
+        </AppContext.Provider>,
+        container,
+    )
+
+    app.stage.addChild(container)
+    await app.init({ background: '#ffffff', resizeTo: document.body })
+    document.body.appendChild(app.canvas)
+}
+
+mount()
+```
 
 ## 特性
 
@@ -40,7 +67,7 @@ alpha
 
 `useTransition`: `startTransition`任务完成后会在最近的一个UI渲染更新后更新`isPending`，如果没有渲染任务则立即更新。
 
-## PIXI问题
+## FAQ
 
 ### Texture不会销毁
 
@@ -49,6 +76,7 @@ alpha
 ### 关于options属性
 
 对应构造函数的options，该属性只有初始化，任何改变都不做更新。
+
 ```ts
 <text options={textStyle} width={200} />
 // 等同于
