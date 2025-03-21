@@ -1,6 +1,6 @@
 import { normalizeChildren } from './h'
 import { resetHookIndex } from './hooks'
-import { createNode } from './pixi'
+import { createNode } from './pixijs'
 import {
     IntrinsicAttributes,
     Children,
@@ -109,9 +109,3 @@ function findClosestHostParentNode(fiber: FiberHost) {
         }
     }
 }
-
-// @ts-ignore
-function updateLazy() {}
-
-// @ts-ignore
-function updateSuspense() {}

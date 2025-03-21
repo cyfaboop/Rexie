@@ -1,5 +1,5 @@
 import { Ref } from './ref'
-import { placeNode, removeNode, RexieNode, updateNode } from './pixi'
+import { placeNode, removeNode, RexieNode, updateNode } from './pixijs'
 import { HookState, HookType } from './hooks'
 import { isFunction } from './util'
 import { Fiber, FiberFinish, Command } from './fiber'
@@ -20,11 +20,13 @@ export function commitWork(fiber?: FiberFinish) {
     }
 
     fiber.cmd = Command.NONE
-    if (fiber.old?.old) fiber.old.old = undefined
+
     attachRef(fiber.ref, fiber.node)
-    commitSiblingWork(fiber.child)
     commitDeletions(fiber)
+
+    commitSiblingWork(fiber.child)
     commitSiblingWork(fiber.sibling)
+
     commitHookEffects(fiber)
 }
 
@@ -37,22 +39,28 @@ function commitSiblingWork(fiber?: FiberFinish) {
 }
 
 function commitDeletions(fiber: FiberFinish) {
-    fiber.deletions.forEach(deletion => unmountFiber(deletion))
+    fiber.deletions.forEach(deletion =>
+        recursivelyTraverseUnmountFiber(deletion),
+    )
     fiber.deletions = []
 }
 
-export function unmountFiber(fiber: Fiber | FiberFinish) {
-    // Prevent updates to an unmounted fiber
-    fiber.dirty = true
+export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
     if (fiber.fc) {
-        fiber.hooks && unmountEffects(fiber.hooks[HookType.List])
-        fiber.children?.forEach(unmountFiber)
+        if (fiber.hooks) {
+            unmountEffects(fiber.hooks[HookType.List])
+            fiber.hooks[HookType.Effect].length = 0
+            fiber.hooks[HookType.Layout].length = 0
+        }
     } else {
         if (fiber.parentNode && fiber.node) {
             removeNode(fiber.parentNode, fiber.node)
         }
         attachRef(fiber.ref, undefined)
     }
+
+    // Ensure all child fibers are properly unmounted
+    fiber.children?.forEach(recursivelyTraverseUnmountFiber)
 }
 
 function attachRef(ref?: Ref, node?: RexieNode) {

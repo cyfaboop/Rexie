@@ -1,6 +1,6 @@
-import { RexieNode } from './pixi'
+import { RexieNode } from './pixijs'
 import { Fiber } from './fiber'
-import { unmountFiber } from './commit'
+import { recursivelyTraverseUnmountFiber } from './commit'
 import { schedule } from './schedule'
 import { performSyncWork, performConcurrentWork } from './workLoop'
 
@@ -25,7 +25,7 @@ export function update(fiber: Fiber, sync: false): (() => void) | void
 export function update(fiber: Fiber, sync?: boolean): (() => void) | void
 export function update(fiber: Fiber, sync = false) {
     // Commit changes only if the node is marked as dirty.
-    // concurrent mode will defer the update call to ensure all synchronous setters are fully executed.
+    // Concurrent mode will defer the update call to ensure all synchronous setters are fully executed.
     // Equivalent to batching updates
     if (!fiber.dirty) {
         fiber.dirty = true
@@ -35,7 +35,7 @@ export function update(fiber: Fiber, sync = false) {
             const interrupt = schedule(() => performConcurrentWork(fiber))
             return () => {
                 interrupt()
-                unmountFiber(fiber)
+                recursivelyTraverseUnmountFiber(fiber)
             }
         }
     }

@@ -1,6 +1,6 @@
 import { Ref } from './ref'
 import { Hooks } from './hooks'
-import { RexieNode } from './pixi'
+import { RexieNode } from './pixijs'
 import { FIBER_TYPE } from './symbols'
 import { FC } from './component'
 
