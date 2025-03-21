@@ -16,13 +16,13 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
         prevChild && (prevChild.sibling = newChild)
 
         const newChildKT = keyAndType(newChild)
-        const matchOldIndex = oldKeyIndexMap[keyAndType(newChild)]
         if (oldChild && newChildKT === keyAndType(oldChild)) {
-            mergeOldFiber(newChild, oldChild)
             newChild.cmd = Command.UPDATE
+            mergeOldFiber(newChild, oldChild)
+            reservedIndexMap[index] = true
         } else {
             newChild.cmd = Command.PLACEMENT
-            if (oldChild) currentFiber.deletions.push(oldChild)
+            const matchOldIndex = oldKeyIndexMap[newChildKT]
             if (matchOldIndex !== undefined) {
                 mergeOldFiber(newChild, oldChildren[matchOldIndex])
                 reservedIndexMap[matchOldIndex] = true
@@ -32,11 +32,9 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
         prevChild = newChild
     })
 
-    if (oldChildren.length > newChildren.length) {
-        for (let i = newChildren.length; i < oldChildren.length; i++) {
-            if (reservedIndexMap[i]) continue
-            currentFiber.deletions.push(oldChildren[i])
-        }
+    for (let i = 0; i < oldChildren.length; i++) {
+        if (reservedIndexMap[i]) continue
+        currentFiber.deletions.push(oldChildren[i])
     }
 
     return newChildren[0]
