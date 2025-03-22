@@ -13,7 +13,7 @@
 
 - **React Hooks** - `useState`, `useEffect`...`useTransition`, `useSyncExternalStore`
 - **Component-Based** - Native JSX/TSX support with full type system
-- **Focus on Core Logic** - Dedicate to core logic while Rexie handles tedious drawing routines
+- **Focus on Core Logic** - Dedicate to core logic while rexie handles tedious drawing routines
 - **Sync/Concurrent** - Choose your update strategy per render
 
 ### Feather-Light
@@ -59,15 +59,19 @@ async function mount() {
 mount()
 ```
 
-## Hooks API
+## API Reference
 
-### No/Minor Differences
+### Hooks
 
-`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useContext`, `useImperativeHandle`, `useSyncExternalStore`
+`useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useCallback`, `useRef`, `useMemo`, `useContext`, `useTransition`, `useImperativeHandle`, `useSyncExternalStore`
 
-### Differences
+### Components
 
-`useTransition`: After the `startTransition` task completes, `isPending` will be updated after the nearest UI render update. If there is no rendering task, it updates immediately.
+`<Fragment>`, `<Suspense>`
+
+### APIs
+
+`memo`, `createContext`, `lazy`
 
 ## FAQ
 
@@ -88,7 +92,7 @@ text.width = 200
 
 ### Handling a Massive Number of `ViewContainer`
 
-If there is a need to create thousands or even more `ViewContainer`, the performance of virtual DOM will be extremely poor. Compared to `react-dom`, it is more prone to stack overflow due to the deeper function call chains in PixiJS's API. Although `rexie` can adopt queue-based updates like Preact, the performance will still be severely degraded. Therefore, it is recommended to use `useRef` to obtain a `Container` reference and manually `addChild` `ViewContainer`. When the component unmounts, these `ViewContainer` will still be automatically destroyed, so no manual cleanup is required.
+If there is a need to create thousands or even more `ViewContainer`, the performance of virtual DOM will be extremely poor. Compared to react-dom, it is more prone to stack overflow due to the deeper function call chains in PixiJS's API. Although rexie can adopt queue-based updates like Preact, the performance will still be severely degraded. Therefore, it is recommended to use `useRef` to obtain a `Container` reference and manually `addChild` `ViewContainer`. When the component unmounts, these `ViewContainer` will still be automatically destroyed, so no manual cleanup is required.
 
 ### Order of Props
 
