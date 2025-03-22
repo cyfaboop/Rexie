@@ -1,9 +1,9 @@
-import { Ref, RefObject } from './ref'
+import { RefObject } from './ref'
 import { isFunction } from './util'
 import { Fiber } from './fiber'
 import { update } from './render'
 import { schedule } from './schedule'
-import { ExternalFC, getCurrentFC } from './component'
+import { getCurrentFC, setCurrentFC } from './component'
 
 export interface Hooks {
     /**
@@ -38,63 +38,9 @@ export type EffectSetup = (() => () => any) | (() => any)
 export type Dependencies = ReadonlyArray<unknown>
 export type StateUpdater<S> = S | ((prevState: S) => S)
 
-type Subscriber = () => void
-type ContextStack<T> = T[]
-export interface Context<T> {
-    Provider: ExternalFC<{
-        value: T
-    }>
-    useContext: () => T
-}
-
 let currentIndex = 0
 export function resetHookIndex() {
     currentIndex = 0
-}
-
-export function createContext<T>(defaultValue: T) {
-    const contextStack: ContextStack<T> = []
-    const subscribers = new Set<Subscriber>()
-
-    const getCurrentValue = () => {
-        return contextStack.length > 0
-            ? contextStack[contextStack.length - 1]
-            : defaultValue
-    }
-
-    return {
-        Provider: (({ value, children }) => {
-            useMemo(() => {
-                contextStack.push(value)
-                subscribers.forEach(notify => notify())
-            }, [value])
-
-            useEffect(() => {
-                return () => {
-                    contextStack.pop()
-                    subscribers.forEach(notify => notify())
-                }
-            }, [value])
-
-            return children
-        }) as ExternalFC<{
-            value: T
-        }>,
-        useContext: () => {
-            const [value] = useState(getCurrentValue)
-            return value
-        },
-    }
-}
-
-/**
- * Returns the current context value, as given by the nearest context provider for the given context.
- * When the provider updates, this Hook will trigger a rerender with the latest context value.
- *
- * @param context The context you want to use
- */
-export function useContext<T>(contextType: Context<T>) {
-    return contextType.useContext()
 }
 
 /**
@@ -104,123 +50,6 @@ export function useContext<T>(contextType: Context<T>) {
  */
 export function startTransition(action: () => void | Promise<void>) {
     schedule(action)
-}
-
-/**
- * @returns useTransition returns an array with exactly two items:
- * 1. The isPending flag that tells you whether there is a pending Transition.
- * 2. The startTransition function that lets you mark updates as a Transition.
- */
-export function useTransition() {
-    const [isPending, setPending] = useState(true)
-    const unmounts = useRef<(() => void)[]>([])
-
-    const startTransition = useCallback(
-        (action: () => void | Promise<void>) => {
-            if (!isPending) {
-                setPending(true)
-            }
-
-            unmounts.current.push(
-                schedule(action, () => {
-                    setPending(false)
-                    unmounts.current.shift()
-                }),
-            )
-        },
-    )
-
-    useEffect(() => {
-        return () => {
-            unmounts.current.forEach(fn => fn())
-        }
-    }, [])
-
-    return [isPending, startTransition] as [boolean, typeof startTransition]
-}
-
-/**
- * subscribe to an external store.
- * @param subscribe A function that takes a single callback argument and subscribes it to the store.
- * When the store changes, it should invoke the provided callback,
- * which will cause React to re-call getSnapshot and (if needed) re-render the component.
- * The subscribe function should return a function that cleans up the subscription.
- * @param getSnapshot A function that returns a snapshot of the data in the store that’s needed by the component.
- * While the store has not changed, repeated calls to getSnapshot must return the same value.
- * If the store changes and the returned value is different (as compared by Object.is), React re-renders the component.
- * @returns The current snapshot of the store which you can use in your rendering logic.
- */
-export function useSyncExternalStore<T>(
-    subscribe: (flush: () => void) => () => void,
-    getSnapshot: () => T,
-): T {
-    const value = getSnapshot()
-    const [{ instance }, forceUpdate] = useState({
-        instance: { value, getSnapshot },
-    })
-
-    useLayout(() => {
-        instance.value = value
-        instance.getSnapshot = getSnapshot
-
-        if (didSnapshotChange(instance)) {
-            forceUpdate({ instance })
-        }
-    }, [subscribe, value, getSnapshot])
-
-    useEffect(() => {
-        if (didSnapshotChange(instance)) {
-            forceUpdate({ instance })
-        }
-
-        return subscribe(() => {
-            if (didSnapshotChange(instance)) {
-                forceUpdate({ instance })
-            }
-        })
-    }, [subscribe])
-
-    return value
-}
-
-function didSnapshotChange<T>(instance: { value: T; getSnapshot: () => T }) {
-    const latestGetSnapshot = instance.getSnapshot
-    const prevValue = instance.value
-    try {
-        const nextValue = latestGetSnapshot()
-        return !Object.is(prevValue, nextValue)
-    } catch (error) {
-        return true
-    }
-}
-
-/**
- * @param ref The ref that will be mutated
- * @param create The function that will be executed to get the value that will be attached to ref.current
- * @param dependencies If present, effect will only activate if the values in the list change (using Object.is).
- */
-export function useImperativeHandle<T, R extends T>(
-    ref: Ref<T | null>,
-    create: () => R,
-    dependencies?: Dependencies,
-) {
-    useLayout(
-        () => {
-            if (isFunction(ref)) {
-                const result = ref(create())
-                return () => {
-                    ref(null)
-                    isFunction(result) && result()
-                }
-            } else if (ref) {
-                ref.current = create()
-                return () => {
-                    ref.current = null
-                }
-            }
-        },
-        dependencies == null ? dependencies : dependencies.concat(ref),
-    )
 }
 
 /**
@@ -285,13 +114,13 @@ export function useReducer<S, A, I>(
         hookState[0] = init ? init(initialState) : initialState
     }
 
-    hookState[1] = (action: A) => {
+    hookState[1] = createHookCallback((action: A) => {
         const nextState = reducer(hookState[0], action)
         if (hookState[0] !== nextState) {
             hookState[0] = nextState
             update(current)
         }
-    }
+    }, current)
 
     return hookState as [S, Dispatch<A>]
 }
@@ -328,7 +157,7 @@ function useEffectImplement(
 ) {
     const [hook, current] = getHookState<HookStateEffect>(currentIndex++)
     if (isChanged(hook[1], dependencies)) {
-        hook[0] = setup
+        hook[0] = createHookCallback(setup, current)
         hook[1] = dependencies
         current.hooks?.[type].push(hook as Required<HookStateEffect>)
     }
@@ -367,11 +196,11 @@ export function useMemo<T>(
     calculateValue: () => T,
     dependencies: Dependencies = [],
 ): T {
-    const [hook] = getHookState<HookStateMemo>(currentIndex++)
+    const [hook, current] = getHookState<HookStateMemo>(currentIndex++)
 
     if (isChanged(hook[1], dependencies)) {
         hook[1] = dependencies
-        return (hook[0] = calculateValue())
+        hook[0] = createHookCallback(calculateValue, current)()
     }
 
     return hook[0]
@@ -400,6 +229,13 @@ function getHookState<T extends HookState = HookState>(
     }
 
     return [list[index], current] as any
+}
+
+function createHookCallback<T extends Function>(callback: T, current: Fiber) {
+    return ((...args: any[]) => {
+        setCurrentFC(current)
+        return callback.apply(null, args)
+    }) as any as T
 }
 
 function isChanged(a?: Dependencies, b?: Dependencies) {

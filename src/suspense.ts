@@ -1,7 +1,9 @@
-import { ExternalFC } from './component'
-import { Children, ExternalPropsOf, Fiber } from './fiber'
 import { h } from './h'
-import { createContext, useContext, useEffect, useTransition } from './hooks'
+import { useEffect } from './hooks'
+import { Children, ExternalPropsOf, Fiber } from './fiber'
+import { createContext, useContext } from './context'
+import { ExternalFC } from './component'
+import { useTransition } from './hooks/useTransition'
 
 interface SuspenseProps {
     fallback?: Children

@@ -1,6 +1,6 @@
-import { RexieNode } from './pixijs'
 import { Fiber } from './fiber'
 import { recursivelyTraverseUnmountFiber } from './commit'
+import { RexieNode } from './pixijs'
 import { schedule } from './schedule'
 import { performSyncWork, performConcurrentWork } from './workLoop'
 

@@ -1,5 +1,5 @@
-import { Fiber, Command } from './fiber'
 import { isFunction } from './util'
+import { Fiber, Command } from './fiber'
 
 export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
     let oldChild: Fiber | undefined

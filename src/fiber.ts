@@ -1,9 +1,9 @@
 import { Ref } from './ref'
 import { Hooks } from './hooks'
+import { FiberRoot } from './render'
 import { RexieNode } from './pixijs'
 import { FIBER_TYPE } from './symbols'
 import { ExternalFC, FC } from './component'
-import { FiberRoot } from './render'
 
 export type FiberFinish = FiberFCFinish | FiberHostFinish
 type FiberHostFinish = FiberBaseFinish &

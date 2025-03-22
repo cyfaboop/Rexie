@@ -1,6 +1,5 @@
+import { Ref } from './ref'
 import { isFunction } from './util'
-import { FIBER_TYPE } from './symbols'
-import { ExternalFC, FC } from './component'
 import {
     Children,
     Fiber,
@@ -10,7 +9,8 @@ import {
     Key,
     PropsOf,
 } from './fiber'
-import { Ref } from './ref'
+import { FIBER_TYPE } from './symbols'
+import { ExternalFC, FC } from './component'
 
 let fiberId = 0
 let componentId = 0
