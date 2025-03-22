@@ -17,12 +17,25 @@ export class FiberRoot {
         this.node = node
     }
 
+    private _unmount?: () => void
+
     public render(fiber: Fiber, sync: true): void
     public render(fiber: Fiber, sync: false): (() => void) | void
     public render(fiber: Fiber, sync?: boolean): (() => void) | void
     public render(fiber: Fiber, sync = false) {
+        if (this.child) {
+            this.unmount()
+        }
+
         fiber.root = this
-        return update(fiber, sync)
+        this.child = fiber
+        this._unmount = update(fiber, sync) || undefined
+    }
+
+    public unmount() {
+        this._unmount?.()
+        this.child = undefined
+        this.deletions = []
     }
 }
 
