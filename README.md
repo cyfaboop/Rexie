@@ -23,12 +23,6 @@
 - **Direct API Access** - Full exposure of native PixiJS APIs
 - **On-Demand Rendering** - Independent multi-instance rendering, mountable to any container, disposable anytime
 
-### Beyond PixiJS
-
-- **Renderer Agnostic** - Create new renderers with <100 lines of code
-- **Framework Integration** - Built for seamless embedding in React/Vue/etc
-- **Universal Core** - Platform-agnostic core with browser/Canvas/WebGL extensions
-
 ## Quick Start
 
 alpha
