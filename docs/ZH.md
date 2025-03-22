@@ -32,7 +32,7 @@ alpha
 
 ```tsx
 import * as PIXI from 'pixi.js'
-import { h, render, createContext } from 'rexie'
+import { h, createRoot, createContext } from 'rexie'
 
 import App from './App'
 
@@ -41,13 +41,11 @@ export const AppContext = createContext(app)
 
 async function mount() {
     const container = new PIXI.Container()
-    render(
+    createRoot(container).render(
         <AppContext.Provider value={app}>
             <App />
         </AppContext.Provider>,
-        container,
     )
-
     app.stage.addChild(container)
     await app.init({ background: '#ffffff', resizeTo: document.body })
     document.body.appendChild(app.canvas)
@@ -68,7 +66,7 @@ mount()
 
 ### APIs
 
-`memo`, `createContext`, `lazy`
+`createContext`, `createRoot`, `lazy`, `memo`
 
 ## FAQ
 
