@@ -8,7 +8,7 @@ import { schedule } from 'src/schedule'
  */
 export function useTransition() {
     const [isPending, setPending] = useState(true)
-    const needRemoved = useRef<(() => void)[]>([])
+    const unmounts = useRef<(() => void)[]>([])
 
     const startTransition = useCallback(
         (action: () => void | Promise<void>) => {
@@ -16,10 +16,10 @@ export function useTransition() {
                 setPending(true)
             }
 
-            needRemoved.current.push(
+            unmounts.current.push(
                 schedule(action, () => {
                     setPending(false)
-                    needRemoved.current.shift()
+                    unmounts.current.shift()
                 }),
             )
         },
@@ -27,7 +27,7 @@ export function useTransition() {
 
     useEffect(() => {
         return () => {
-            needRemoved.current.forEach(fn => fn())
+            unmounts.current.forEach(fn => fn())
         }
     }, [])
 
