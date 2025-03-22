@@ -37,8 +37,6 @@ alpha
 import * as PIXI from 'pixi.js'
 import { h, createRoot, createContext } from 'rexie'
 
-import App from './App'
-
 const app = new PIXI.Application()
 export const AppContext = createContext(app)
 
@@ -46,7 +44,10 @@ async function mount() {
     const container = new PIXI.Container()
     createRoot(container).render(
         <AppContext.Provider value={app}>
-            <App />
+            <container>
+                <graphics  />
+                {'app'}
+            </container>
         </AppContext.Provider>,
     )
     app.stage.addChild(container)
