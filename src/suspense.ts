@@ -21,8 +21,8 @@ export function Suspense(props: SuspenseProps) {
 export function lazy<T extends ExternalFC>(
     load: () => Promise<{ default: T }>,
 ) {
-    let error: any
-    let component: any
+    let error: unknown
+    let component: undefined | ExternalFC
 
     return (props: ExternalPropsOf<T>) => {
         const fallback = useContext(SuspenseContenxt)
@@ -32,7 +32,7 @@ export function lazy<T extends ExternalFC>(
             startTransition(async () => {
                 try {
                     const module = await load()
-                    component = module.default.bind(null, props)
+                    component = module.default
                 } catch (e) {
                     error = e
                 }
@@ -40,7 +40,7 @@ export function lazy<T extends ExternalFC>(
         }, [])
 
         if (error) throw error
-        if (component) return component as T
+        if (component) return component(props)
         return fallback as Fiber
     }
 }
