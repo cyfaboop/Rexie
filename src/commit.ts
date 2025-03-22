@@ -26,9 +26,7 @@ export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
             fiber.hooks[HookType.Layout].length = 0
         }
     } else {
-        if (fiber.parentNode && fiber.node) {
-            removeNode(fiber.parentNode, fiber.node)
-        }
+        removeNode(fiber.node!)
         attachRef(fiber.ref, undefined)
     }
 

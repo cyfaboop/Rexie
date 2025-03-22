@@ -72,7 +72,8 @@ export function placeNode(
     }
 }
 
-export function removeNode(parent: RexieNode, child: RexieNode) {
+export function removeNode(child: RexieNode) {
+    child.removeFromParent()
     // PixiJS ensures destroyed nodes are not removed again
-    parent.removeChild(child).destroy({ children: true })
+    child.destroy({ children: true })
 }
