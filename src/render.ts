@@ -4,20 +4,26 @@ import { recursivelyTraverseUnmountFiber } from './commit'
 import { schedule } from './schedule'
 import { performSyncWork, performConcurrentWork } from './workLoop'
 
-export function render(fiber: Fiber, node: RexieNode, sync: true): void
-export function render(
-    fiber: Fiber,
-    node: RexieNode,
-    sync: false,
-): (() => void) | void
-export function render(
-    fiber: Fiber,
-    node: RexieNode,
-    sync?: boolean,
-): (() => void) | void
-export function render(fiber: Fiber, node: RexieNode, sync = false) {
-    fiber.rootNode = node
-    return update(fiber, sync)
+export function createRoot(node: RexieNode) {
+    return new FiberRoot(node)
+}
+
+export class FiberRoot {
+    public node: RexieNode
+    public child?: Fiber
+    public deletions: Fiber[] = []
+
+    constructor(node: RexieNode) {
+        this.node = node
+    }
+
+    public render(fiber: Fiber, sync: true): void
+    public render(fiber: Fiber, sync: false): (() => void) | void
+    public render(fiber: Fiber, sync?: boolean): (() => void) | void
+    public render(fiber: Fiber, sync = false) {
+        fiber.root = this
+        return update(fiber, sync)
+    }
 }
 
 export function update(fiber: Fiber, sync: true): void

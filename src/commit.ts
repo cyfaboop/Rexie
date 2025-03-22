@@ -5,7 +5,38 @@ import { isFunction } from './util'
 import { Fiber, FiberFinish, Command } from './fiber'
 import { schedule } from './schedule'
 
-export function commitWork(fiber?: FiberFinish) {
+export function commitWork(fiber: FiberFinish) {
+    commitDeletions(fiber)
+    commitCommand(fiber)
+}
+
+function commitDeletions(fiber: FiberFinish) {
+    fiber.root.deletions.forEach(recursivelyTraverseUnmountFiber)
+    fiber.root.deletions = []
+}
+
+export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
+    if (fiber.destroyed) return
+    fiber.destroyed = true
+
+    if (fiber.fc) {
+        if (fiber.hooks) {
+            unmountEffects(fiber.hooks[HookType.List])
+            fiber.hooks[HookType.Effect].length = 0
+            fiber.hooks[HookType.Layout].length = 0
+        }
+    } else {
+        if (fiber.parentNode && fiber.node) {
+            removeNode(fiber.parentNode, fiber.node)
+        }
+        attachRef(fiber.ref, undefined)
+    }
+
+    // Ensure all child fibers are properly unmounted
+    fiber.children?.forEach(recursivelyTraverseUnmountFiber)
+}
+
+function commitCommand(fiber?: FiberFinish) {
     if (!fiber) return
 
     if (fiber.fc) {
@@ -22,45 +53,19 @@ export function commitWork(fiber?: FiberFinish) {
     fiber.cmd = Command.NONE
 
     attachRef(fiber.ref, fiber.node)
-    commitDeletions(fiber)
 
-    commitSiblingWork(fiber.child)
-    commitSiblingWork(fiber.sibling)
+    commitSiblingCommand(fiber.child)
+    commitSiblingCommand(fiber.sibling)
 
     commitHookEffects(fiber)
 }
 
-function commitSiblingWork(fiber?: FiberFinish) {
+function commitSiblingCommand(fiber?: FiberFinish) {
     if (fiber?.memo) {
-        commitSiblingWork(fiber.sibling)
+        commitSiblingCommand(fiber.sibling)
     } else {
-        commitWork(fiber)
+        commitCommand(fiber)
     }
-}
-
-function commitDeletions(fiber: FiberFinish) {
-    fiber.deletions.forEach(deletion =>
-        recursivelyTraverseUnmountFiber(deletion),
-    )
-    fiber.deletions = []
-}
-
-export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
-    if (fiber.fc) {
-        if (fiber.hooks) {
-            unmountEffects(fiber.hooks[HookType.List])
-            fiber.hooks[HookType.Effect].length = 0
-            fiber.hooks[HookType.Layout].length = 0
-        }
-    } else {
-        if (fiber.parentNode && fiber.node) {
-            removeNode(fiber.parentNode, fiber.node)
-        }
-        attachRef(fiber.ref, undefined)
-    }
-
-    // Ensure all child fibers are properly unmounted
-    fiber.children?.forEach(recursivelyTraverseUnmountFiber)
 }
 
 function attachRef(ref?: Ref, node?: RexieNode) {

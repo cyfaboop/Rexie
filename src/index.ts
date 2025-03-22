@@ -11,7 +11,7 @@ export {
     createContext,
 } from './hooks'
 export { h, memo, Fragment, isValidElement } from './h'
-export { render } from './render'
+export { createRoot } from './render'
 export { type ExternalFC as FC } from './component'
 export { shouldYield, startTransition } from './schedule'
 export { useTransition } from './hooks/useTransition'

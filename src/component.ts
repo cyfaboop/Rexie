@@ -37,10 +37,30 @@ export function getCurrentFC() {
 }
 
 export function updateComponent(fiber: Fiber) {
+    fiber.root = findRoot(fiber)
+    if (__DEV__ && !fiber.root) {
+        throw new Error('Not found the root.')
+    }
+
     if (fiber.fc) {
         updateFC(fiber)
     } else {
         updateHost(fiber)
+    }
+}
+
+function findRoot(fiber: Fiber) {
+    let parent = fiber
+    while (parent) {
+        if (parent.root) {
+            return parent.root
+        }
+
+        if (parent.parent) {
+            parent = parent.parent
+        } else {
+            return parent.root
+        }
     }
 }
 
@@ -86,7 +106,7 @@ function havePropsChanged(
 
 function updateHost(fiber: FiberHost) {
     fiber.parentNode = findClosestHostParentNode(fiber)
-    if (!fiber.parentNode) {
+    if (__DEV__ && !fiber.parentNode) {
         throw new Error('Not found the root node.')
     }
     if (!fiber.node) {
@@ -105,7 +125,7 @@ function findClosestHostParentNode(fiber: FiberHost) {
         if (parent.parent) {
             parent = parent.parent
         } else {
-            return parent.rootNode
+            return parent.root?.node
         }
     }
 }

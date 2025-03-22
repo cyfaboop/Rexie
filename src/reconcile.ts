@@ -34,7 +34,7 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
 
     for (let i = 0; i < oldChildren.length; i++) {
         if (reservedIndexMap[i]) continue
-        currentFiber.deletions.push(oldChildren[i])
+        currentFiber.root!.deletions.push(oldChildren[i])
     }
 
     return newChildren[0]

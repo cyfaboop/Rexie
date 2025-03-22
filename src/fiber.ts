@@ -3,6 +3,7 @@ import { Hooks } from './hooks'
 import { RexieNode } from './pixijs'
 import { FIBER_TYPE } from './symbols'
 import { FC } from './component'
+import { FiberRoot } from './render'
 
 export type FiberFinish = FiberFCFinish | FiberHostFinish
 type FiberHostFinish = FiberBaseFinish &
@@ -19,11 +20,11 @@ type FiberFCFinish = FiberBaseFinish &
 interface FiberBaseFinish extends FiberBase {
     cmd: Command
     old?: FiberFinish
+    root: FiberRoot
     child?: FiberFinish
     parent?: FiberFinish
     sibling?: FiberFinish
     children?: FiberFinish[]
-    deletions: FiberFinish[]
 }
 
 export type Fiber = FiberFC | FiberHost
@@ -56,6 +57,7 @@ interface FiberBase {
     cmd?: Command
     old?: Fiber
     memo?: boolean
+    root?: FiberRoot
     node?: RexieNode
     hooks?: Hooks
     child?: Fiber
@@ -63,8 +65,7 @@ interface FiberBase {
     parent?: Fiber
     sibling?: Fiber
     children?: Fiber[]
-    rootNode?: RexieNode
-    deletions: Fiber[]
+    destroyed?: boolean
     parentNode?: RexieNode
 }
 
