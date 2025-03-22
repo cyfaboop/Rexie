@@ -2,7 +2,7 @@ import { Ref } from './ref'
 import { Hooks } from './hooks'
 import { RexieNode } from './pixijs'
 import { FIBER_TYPE } from './symbols'
-import { FC } from './component'
+import { ExternalFC, FC } from './component'
 import { FiberRoot } from './render'
 
 export type FiberFinish = FiberFCFinish | FiberHostFinish
@@ -70,13 +70,21 @@ interface FiberBase {
 }
 
 export type PropsOf<T extends FC | keyof JSX.IntrinsicElements> = Omit<
-    IntrinsicPropsOf<T>,
+    T extends FC<infer P>
+        ? P
+        : T extends keyof JSX.IntrinsicElements
+          ? JSX.IntrinsicElements[T]
+          : never,
     'key' | 'ref' | 'children'
 > & {
-    children?: Fiber[]
+    children: Fiber[]
 }
-export type IntrinsicPropsOf<T extends FC | keyof JSX.IntrinsicElements> =
-    T extends FC<infer P>
+
+export type ExternalPropsOf<
+    T extends ExternalFC<P> | keyof JSX.IntrinsicElements,
+    P = any,
+> =
+    T extends ExternalFC<infer P>
         ? P
         : T extends keyof JSX.IntrinsicElements
           ? JSX.IntrinsicElements[T]

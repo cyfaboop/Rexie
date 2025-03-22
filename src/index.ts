@@ -9,11 +9,12 @@ export {
     useLayout as useLayoutEffect,
     useContext,
     createContext,
+    useTransition,
+    startTransition,
+    useImperativeHandle,
+    useSyncExternalStore,
 } from './hooks'
 export { h, memo, Fragment, isValidElement } from './h'
 export { createRoot } from './render'
 export { type ExternalFC as FC } from './component'
-export { shouldYield, startTransition } from './schedule'
-export { useTransition } from './hooks/useTransition'
-export { useImperativeHandle } from './hooks/useImperativeHandle'
-export { useSyncExternalStore } from './hooks/useSyncExternalStore'
+export { shouldYield } from './schedule'

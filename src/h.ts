@@ -6,7 +6,7 @@ import {
     Fiber,
     FiberFC,
     FiberHostBase,
-    IntrinsicPropsOf,
+    ExternalPropsOf,
     Key,
     PropsOf,
 } from './fiber'
@@ -15,27 +15,25 @@ import { Ref } from './ref'
 let fiberId = 0
 let componentId = 0
 
-export function h<T extends FC>(
+export function h<T extends ExternalFC<P>, P = any>(
     type: T,
-    props?: IntrinsicPropsOf<T> | null,
+    props?: ExternalPropsOf<T> | null,
     ...children: Children[]
 ): FiberFC
 export function h<T extends keyof JSX.IntrinsicElements>(
     type: T,
-    props?: IntrinsicPropsOf<T> | null,
+    props?: ExternalPropsOf<T> | null,
     ...children: Children[]
 ): FiberHostBase<T>
-export function h<T extends FC | keyof JSX.IntrinsicElements>(
+export function h<T extends ExternalFC<any> | keyof JSX.IntrinsicElements>(
     type: T,
-    props?: IntrinsicPropsOf<T> | null,
+    props?: ExternalPropsOf<T> | null,
     ...children: Children[]
 ) {
-    const nonNullProps = props ?? ({} as IntrinsicPropsOf<T>)
+    const nonNullProps = props ?? ({} as ExternalPropsOf<T>)
     const key = nonNullProps.key ?? undefined
-    // @ts-expect-error
     const ref = nonNullProps.ref ?? undefined
     delete nonNullProps.key
-    // @ts-expect-error
     delete nonNullProps.ref
 
     const nChildren = normalizeChildren(props?.children || children.flat())
@@ -48,7 +46,7 @@ export function h<T extends FC | keyof JSX.IntrinsicElements>(
         (nonNullProps as PropsOf<'text'>).text = '' + nChildren[0].props.text
     else if (nChildren.length > 0) nonNullProps.children = nChildren
 
-    return createFiber(type, nonNullProps as PropsOf<T>, key, ref)
+    return createFiber(type as FC, nonNullProps as PropsOf<FC>, key, ref)
 }
 
 export function normalizeChildren(children: Children) {
@@ -94,7 +92,7 @@ const generateComponentId = (c: Function) => {
     return `${c.name}_${++componentId}`
 }
 
-export function Fragment(props: IntrinsicPropsOf<FC>) {
+export function Fragment(props: ExternalPropsOf<ExternalFC>) {
     // For JSX compatibility
     return props.children as JSX.Element
 }

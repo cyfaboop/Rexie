@@ -10,8 +10,8 @@ import {
 } from './fiber'
 import { reconcileChildren } from './reconcile'
 
-export interface ExternalFC<P = {}> extends Omit<FC<P>, 'id'> {
-    (props: P & IntrinsicAttributes): JSX.Element
+export interface ExternalFC<P = IntrinsicAttributes> extends Omit<FC<P>, 'id'> {
+    (props: P & IntrinsicAttributes): Fiber
 }
 export interface FC<P = IntrinsicAttributes> {
     (props: P & IntrinsicAttributes): Children
