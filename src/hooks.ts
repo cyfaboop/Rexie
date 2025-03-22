@@ -2,7 +2,6 @@ import { RefObject } from './ref'
 import { isFunction } from './util'
 import { Fiber } from './fiber'
 import { update } from './render'
-import { schedule } from './schedule'
 import { getCurrentFC, setCurrentFC } from './component'
 
 export interface Hooks {
@@ -41,15 +40,6 @@ export type StateUpdater<S> = S | ((prevState: S) => S)
 let currentIndex = 0
 export function resetHookIndex() {
     currentIndex = 0
-}
-
-/**
- * Non-urgent update (transitional update):
- * For example, search suggestions, data loading, etc., which can be processed later.
- * Marks the wrapped update as non-urgent, and the action will be executed after the UI update.
- */
-export function startTransition(action: () => void | Promise<void>) {
-    schedule(action)
 }
 
 /**

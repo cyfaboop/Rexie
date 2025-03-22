@@ -13,6 +13,15 @@ let useMicrotask = false
 const taskQueue: Task[] = []
 const TASK_YIELD_THRESHOLD_MS = 5
 
+/**
+ * Non-urgent update (transitional update):
+ * For example, search suggestions, data loading, etc., which can be processed later.
+ * Marks the wrapped update as non-urgent, and the action will be executed after the UI update.
+ */
+export function startTransition(action: () => void | Promise<void>) {
+    schedule(action)
+}
+
 export function schedule(action: Action, onResolved?: () => void) {
     const task = { next: action, onResolved } as Task
     taskQueue.push(task)

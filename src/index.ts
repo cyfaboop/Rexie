@@ -7,7 +7,6 @@ export {
     useRef,
     useLayout,
     useLayout as useLayoutEffect,
-    startTransition,
 } from './hooks'
 export { h, memo, Fragment, isValidElement } from './h'
 export { createRoot } from './render'
