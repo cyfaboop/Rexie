@@ -17,7 +17,6 @@ function commitDeletions(fiber: FiberFinish) {
 
 export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
     if (fiber.destroyed) return
-    fiber.destroyed = true
 
     if (fiber.fc) {
         if (fiber.hooks) {
@@ -29,6 +28,8 @@ export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
         removeNode(fiber.node!)
         attachRef(fiber.ref, undefined)
     }
+
+    fiber.destroyed = true
 
     // Ensure all child fibers are properly unmounted
     fiber.children?.forEach(recursivelyTraverseUnmountFiber)
