@@ -39,7 +39,7 @@ export type StateUpdater<S> = S | ((prevState: S) => S)
 
 type Subscriber = () => void
 type ContextStack<T> = T[]
-interface ContextType<T> {
+interface Context<T> {
     Provider: ExternalFC<{
         value: T
     }>
@@ -279,6 +279,6 @@ export function createContext<T>(defaultValue: T) {
  *
  * @param context The context you want to use
  */
-export function useContext<T>(contextType: ContextType<T>) {
+export function useContext<T>(contextType: Context<T>) {
     return contextType.useContext()
 }

@@ -32,8 +32,10 @@ export function h<T extends FC | keyof JSX.IntrinsicElements>(
 ) {
     const nonNullProps = props ?? ({} as IntrinsicPropsOf<T>)
     const key = nonNullProps.key ?? undefined
+    // @ts-expect-error
     const ref = nonNullProps.ref ?? undefined
     delete nonNullProps.key
+    // @ts-expect-error
     delete nonNullProps.ref
 
     const nChildren = normalizeChildren(props?.children || children.flat())

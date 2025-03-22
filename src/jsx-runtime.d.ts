@@ -99,7 +99,7 @@ declare global {
 
         export interface ContainerElement<
             T = PIXI.ContainerOptions<PIXI.ContainerChild>,
-        > extends Omit<IntrinsicAttributes, 'ref'>,
+        > extends IntrinsicAttributes,
                 Options<T>,
                 FederatedEventHandler {
             ref?: Ref<PIXI.Container>

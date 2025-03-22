@@ -82,9 +82,8 @@ export type IntrinsicPropsOf<T extends FC | keyof JSX.IntrinsicElements> =
           ? JSX.IntrinsicElements[T]
           : never
 
-export interface IntrinsicAttributes<R = any> {
+export interface IntrinsicAttributes {
     key?: Key
-    ref?: Ref<R>
     children?: Children
 }
 
