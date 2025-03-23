@@ -1,6 +1,6 @@
 import { Ref } from './ref'
 import { Hooks } from './hooks'
-import { FiberRoot } from './render'
+import { FiberRoot } from './root'
 import { RexieNode } from './pixijs'
 import { FIBER_TYPE } from './symbols'
 import { ExternalFC, FC } from './component'

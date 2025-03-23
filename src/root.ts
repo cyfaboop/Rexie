@@ -10,7 +10,7 @@ export function createRoot(node: RexieNode) {
 
 export class FiberRoot {
     public node: RexieNode
-    public child?: Fiber
+    public current?: Fiber
     public deletions: Fiber[] = []
 
     constructor(node: RexieNode) {
@@ -23,18 +23,18 @@ export class FiberRoot {
     public render(fiber: Fiber, sync: false): (() => void) | void
     public render(fiber: Fiber, sync?: boolean): (() => void) | void
     public render(fiber: Fiber, sync = false) {
-        if (this.child) {
+        if (this.current) {
             this.unmount()
         }
 
         fiber.root = this
-        this.child = fiber
+        this.current = fiber
         this._unmount = update(fiber, sync) || undefined
     }
 
     public unmount() {
         this._unmount?.()
-        this.child = undefined
+        this.current = undefined
         this.deletions = []
     }
 }

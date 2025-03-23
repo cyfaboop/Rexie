@@ -1,7 +1,7 @@
 import { RefObject } from './ref'
 import { isFunction } from './util'
 import { Fiber } from './fiber'
-import { update } from './render'
+import { update } from './root'
 import { getCurrentFC, setCurrentFC } from './component'
 
 export interface Hooks {

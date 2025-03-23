@@ -9,7 +9,7 @@ export {
     useLayout as useLayoutEffect,
 } from './hooks'
 export { h, memo, Fragment, isValidElement } from './h'
-export { createRoot } from './render'
+export { createRoot } from './root'
 export { type ExternalFC as FC } from './component'
 export { Suspense, lazy } from './suspense'
 export { createContext, useContext } from './context'
