@@ -8,10 +8,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const pkg = require('../package.json')
 
 const ctx = await esbuild.context({
-    entryPoints: [resolve(__dirname, '../src/index.ts')],
+    entryPoints: [resolve(__dirname, '../examples/index.tsx')],
     bundle: true,
     outdir: resolve(__dirname, '../dist'),
-    format: 'esm',
+    format: 'iife',
     platform: 'browser',
     // external: ['pixi.js'],
     target: 'es2016',
@@ -30,7 +30,7 @@ const ctx = await esbuild.context({
 
                 build.onEnd(() => {
                     const now = new Date().toLocaleTimeString()
-                    console.log(`✅ 开发环境打包完成 ${now}`)
+                    console.log(`✅ Development build completed at ${now}`)
                 })
             },
         },
@@ -39,10 +39,10 @@ const ctx = await esbuild.context({
 
 ctx.watch()
     .then(() => {
-        console.log('👀 正在监听文件变化...')
+        console.log('👀 Watching for file changes...')
     })
     .catch(err => {
-        console.error('⚠️ 开发环境构建失败:')
+        console.error('⚠️ Development build failed: ')
         console.error(err)
         process.exit(1)
     })

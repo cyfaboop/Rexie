@@ -11,10 +11,10 @@ const pkg = require('../package.json')
 
 esbuild
     .build({
-        entryPoints: [resolve(__dirname, '../src/index.ts')],
+        entryPoints: [resolve(__dirname, '../examples/index.tsx')],
         bundle: true,
         outdir: resolve(__dirname, '../dist'),
-        format: 'esm',
+        format: 'iife',
         platform: 'browser',
         target: 'es2016',
         minify: true,
@@ -27,6 +27,6 @@ esbuild
         plugins: [createTypeCheckPlugin(true)],
     })
     .then(() => {
-        console.log('✅ 生产环境打包完成')
+        console.log('✅ Production build completed')
     })
     .catch(() => process.exit(1))
