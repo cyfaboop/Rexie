@@ -63,6 +63,10 @@ mount()
 
 `createContext`, `createRoot`, `lazy`, `memo`
 
+### 计划实现的API
+
+一些不会显著增加 runtime 重量且符合绘图理念的接口会尽快提上日程：`useDebugValue`, `useDeferredValue`, `useId`, `<>`, `<Profiler>`, `<StrictMode>`, `act`, `cache`, `createPortal`, `flushSync`, `preconnect`, `prefetchDNS`
+
 ## FAQ
 
 ### Texture不会销毁

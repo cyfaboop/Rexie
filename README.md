@@ -39,7 +39,7 @@ async function mount() {
     createRoot(container).render(
         <AppContext.Provider value={app}>
             <container>
-                <graphics  />
+                <graphics />
                 {'app'}
             </container>
         </AppContext.Provider>,
@@ -65,6 +65,10 @@ mount()
 ### APIs
 
 `createContext`, `createRoot`, `lazy`, `memo`
+
+### Planned APIs
+
+Some APIs that do not significantly increase runtime's weight and align with PixiJS's design philosophy will be prioritized for implementation as soon as possible: `useDebugValue`, `useDeferredValue`, `useId`, `<>`, `<Profiler>`, `<StrictMode>`, `act`, `cache`, `createPortal`, `flushSync`, `preconnect`, `prefetchDNS`
 
 ## FAQ
 
