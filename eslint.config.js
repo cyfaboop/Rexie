@@ -2,6 +2,7 @@ import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
+import pluginJest from 'eslint-plugin-jest'
 import pluginReact from 'eslint-plugin-react'
 
 export default defineConfig([
@@ -18,6 +19,21 @@ export default defineConfig([
     tseslint.configs.recommended,
     pluginReact.configs.flat.recommended,
     {
+        // update this to match your test files
+        files: ['**/*.spec.js', '**/*.test.js'],
+        plugins: { jest: pluginJest },
+        languageOptions: {
+            globals: pluginJest.environments.globals.globals,
+        },
+        rules: {
+            'jest/no-disabled-tests': 'warn',
+            'jest/no-focused-tests': 'error',
+            'jest/no-identical-title': 'error',
+            'jest/prefer-to-have-length': 'warn',
+            'jest/valid-expect': 'error',
+        },
+    },
+    {
         settings: {
             react: {
                 pragma: 'h',
@@ -32,6 +48,6 @@ export default defineConfig([
         },
     },
     {
-        ignores: ['**/dist/', '**/temp/', '**/scripts/'],
+        ignores: ['**/dist/', '**/temp/', '**/scripts/', '**/coverage/'],
     },
 ])
