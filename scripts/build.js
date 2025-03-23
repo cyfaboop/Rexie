@@ -3,8 +3,6 @@ import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { createRequire } from 'node:module'
 
-import { createTypeCheckPlugin } from './type-check.js'
-
 const require = createRequire(import.meta.url)
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const pkg = require('../package.json')
@@ -24,7 +22,6 @@ esbuild
             __DEV__: `false`,
             __VERSION__: `"${pkg.version}"`,
         },
-        plugins: [createTypeCheckPlugin(true)],
     })
     .then(() => {
         console.log('✅ Production build completed')

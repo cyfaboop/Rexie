@@ -32,14 +32,15 @@
     "homepage": "https://github.com/wooloo26/rexie#readme",
     "scripts": {
         "dev": "node scripts/dev.js",
-        "build": "rimraf ./dist && pnpm eslint && node scripts/build.js",
+        "build": "pnpm lint && rimraf ./dist && node scripts/build.js",
+        "lint": "pnpm eslint && pnpm check",
         "check": "tsc --incremental --noEmit",
         "format": "prettier --write --cache .",
         "postinstall": "simple-git-hooks",
         "test": "jest"
     },
     "simple-git-hooks": {
-        "pre-commit": "pnpm lint-staged && pnpm check && pnpm eslint",
+        "pre-commit": "pnpm lint-staged && pnpm lint",
         "commit-msg": "node scripts/verify-commit.js"
     },
     "lint-staged": {
