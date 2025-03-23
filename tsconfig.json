@@ -35,5 +35,5 @@
         "jsxFactory": "h",
         "jsxFragmentFactory": "Fragment"
     },
-    "include": ["src/**/*", "examples/**/*", "index.d.ts"]
+    "include": ["src/**/*", "tests/**/*", "examples/**/*", "index.d.ts"]
 }
