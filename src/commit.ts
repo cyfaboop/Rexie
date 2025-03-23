@@ -80,9 +80,7 @@ function attachRef(ref?: Ref, node?: RexieNode) {
 function commitHookEffects(fiber: Fiber) {
     if (fiber.hooks) {
         updateEffects(fiber.hooks[HookType.Layout])
-        schedule(
-            () => fiber.hooks && updateEffects(fiber.hooks[HookType.Effect]),
-        )
+        schedule(() => fiber.hooks && updateEffects(fiber.hooks[HookType.Effect]))
     }
 }
 

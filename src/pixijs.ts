@@ -31,41 +31,31 @@ export function updateNode(
     newProps: Record<string, any>,
     oldProps: Record<string, any>,
 ) {
-    new Set([...Object.keys(newProps), ...Object.keys(oldProps)]).forEach(
-        key => {
-            const newProp = newProps[key]
-            const oldProp = oldProps[key]
+    new Set([...Object.keys(newProps), ...Object.keys(oldProps)]).forEach(key => {
+        const newProp = newProps[key]
+        const oldProp = oldProps[key]
 
-            if (
-                newProp === oldProp ||
-                key === 'children' ||
-                key === 'options'
-            ) {
-                return
-            } else if (key[0] === 'o' && key[1] === 'n') {
-                // TODO Optimize event handling: hitArea, interactive, bubble, etc.
-                key = key.slice(2).toLowerCase()
-                if (oldProp) {
-                    node.removeEventListener(key, oldProp)
-                }
-                node.addEventListener(key, newProp)
-            } else {
-                try {
-                    // @ts-expect-error
-                    node[key] = newProp
-                } catch (error) {
-                    console.error(`Failed to set property "${key}": `, error)
-                }
+        if (newProp === oldProp || key === 'children' || key === 'options') {
+            return
+        } else if (key[0] === 'o' && key[1] === 'n') {
+            // TODO Optimize event handling: hitArea, interactive, bubble, etc.
+            key = key.slice(2).toLowerCase()
+            if (oldProp) {
+                node.removeEventListener(key, oldProp)
             }
-        },
-    )
+            node.addEventListener(key, newProp)
+        } else {
+            try {
+                // @ts-expect-error
+                node[key] = newProp
+            } catch (error) {
+                console.error(`Failed to set property "${key}": `, error)
+            }
+        }
+    })
 }
 
-export function placeNode(
-    parent: RexieNode,
-    newChild: RexieNode,
-    oldChild?: RexieNode,
-) {
+export function placeNode(parent: RexieNode, newChild: RexieNode, oldChild?: RexieNode) {
     if (oldChild) {
         parent.addChildAt(newChild, parent.getChildIndex(oldChild))
     } else {

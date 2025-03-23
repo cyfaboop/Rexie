@@ -41,9 +41,8 @@ export type FiberHost =
     | FiberHostBase<'graphics'>
     | FiberHostBase<'container'>
 
-export interface FiberHostBase<
-    T extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements,
-> extends FiberBase {
+export interface FiberHostBase<T extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements>
+    extends FiberBase {
     fc: false
     type: T
     props: PropsOf<T>
@@ -80,10 +79,7 @@ export type PropsOf<T extends FC | keyof JSX.IntrinsicElements> = Omit<
     children: Fiber[]
 }
 
-export type ExternalPropsOf<
-    T extends ExternalFC<P> | keyof JSX.IntrinsicElements,
-    P = any,
-> =
+export type ExternalPropsOf<T extends ExternalFC<P> | keyof JSX.IntrinsicElements, P = any> =
     T extends ExternalFC<infer P>
         ? P
         : T extends keyof JSX.IntrinsicElements
@@ -97,15 +93,7 @@ export interface IntrinsicAttributes {
 
 export type Key = string | number | symbol | null | undefined
 export type Children = Child[] | Child
-export type Child =
-    | Fiber
-    | object
-    | string
-    | number
-    | bigint
-    | boolean
-    | null
-    | undefined
+export type Child = Fiber | object | string | number | bigint | boolean | null | undefined
 
 export const enum Command {
     NONE = 0,

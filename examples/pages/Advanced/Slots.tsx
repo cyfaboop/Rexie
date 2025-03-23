@@ -20,9 +20,5 @@ export const Slots: FC<{
         })
     }, [])
 
-    return (
-        <container ref={container}>
-            {isPending ? <Loading /> : undefined}
-        </container>
-    )
+    return <container ref={container}>{isPending ? <Loading /> : undefined}</container>
 })

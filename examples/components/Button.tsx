@@ -1,14 +1,5 @@
 import * as PIXI from 'pixi.js'
-import {
-    h,
-    FC,
-    memo,
-    useCallback,
-    useRef,
-    useEffect,
-    useState,
-    useMemo,
-} from 'rexie'
+import { h, FC, memo, useCallback, useRef, useEffect, useState, useMemo } from 'rexie'
 
 export const buttonStyle = new PIXI.TextStyle({
     fill: '#fff',
@@ -81,10 +72,7 @@ export function generateButtonLayoutProps(
     return { propsArr, line, lineWrapY: calcY(line + 1) }
 }
 
-export function useLayoutData(
-    pages: string[],
-    screen: { width: number; height: number },
-) {
+export function useLayoutData(pages: string[], screen: { width: number; height: number }) {
     return useMemo(() => {
         const props = generateButtonLayoutProps(pages, 60, 30, screen.width)
         return {
@@ -126,61 +114,49 @@ export const Button: FC<{
     active: boolean
     text: string
     onClick: () => void
-}> = memo(
-    ({ text, onClick, x, y, width, height, active, textWidth, textHeight }) => {
-        const button = useRef<PIXI.Graphics>()
-        const [state, setState] = useState<'normal' | 'hover' | 'active'>(
-            active ? 'active' : 'normal',
-        )
-        const onOut = useCallback(() => !active && setState('normal'), [active])
-        const onHover = useCallback(
-            () => !active && setState('hover'),
-            [active],
-        )
-        const onRelease = useCallback(
-            () => !active && setState('normal'),
-            [active],
-        )
+}> = memo(({ text, onClick, x, y, width, height, active, textWidth, textHeight }) => {
+    const button = useRef<PIXI.Graphics>()
+    const [state, setState] = useState<'normal' | 'hover' | 'active'>(active ? 'active' : 'normal')
+    const onOut = useCallback(() => !active && setState('normal'), [active])
+    const onHover = useCallback(() => !active && setState('hover'), [active])
+    const onRelease = useCallback(() => !active && setState('normal'), [active])
 
-        useEffect(() => {
-            button.current
-                ?.roundRect(0, 0, width, height, 5)
-                .fill(getColor(state))
-        }, [state, width, height])
+    useEffect(() => {
+        button.current?.roundRect(0, 0, width, height, 5).fill(getColor(state))
+    }, [state, width, height])
 
-        useEffect(() => {
-            setState(active ? 'active' : 'normal')
-        }, [active])
+    useEffect(() => {
+        setState(active ? 'active' : 'normal')
+    }, [active])
 
-        return (
-            <container
+    return (
+        <container
+            options={{
+                width,
+                height,
+            }}
+            x={x}
+            y={y}
+        >
+            <graphics
+                ref={button}
+                onClick={onClick}
+                onPointerover={onHover}
+                onPointerout={onOut}
+                onPointerup={onRelease}
+                onTap={onClick}
+                cursor="pointer"
+                eventMode="static"
+            />
+            <text
                 options={{
-                    width,
-                    height,
+                    text,
+                    style: buttonStyle.clone(),
                 }}
-                x={x}
-                y={y}
-            >
-                <graphics
-                    ref={button}
-                    onClick={onClick}
-                    onPointerover={onHover}
-                    onPointerout={onOut}
-                    onPointerup={onRelease}
-                    onTap={onClick}
-                    cursor="pointer"
-                    eventMode="static"
-                />
-                <text
-                    options={{
-                        text,
-                        style: buttonStyle.clone(),
-                    }}
-                    x={(width - textWidth) / 2}
-                    y={(height - textHeight) / 2 - 1}
-                    resolution={1.3}
-                />
-            </container>
-        )
-    },
-)
+                x={(width - textWidth) / 2}
+                y={(height - textHeight) / 2 - 1}
+                resolution={1.3}
+            />
+        </container>
+    )
+})

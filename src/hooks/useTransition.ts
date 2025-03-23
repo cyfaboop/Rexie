@@ -10,20 +10,18 @@ export function useTransition() {
     const [isPending, setPending] = useState(true)
     const unmounts = useRef<(() => void)[]>([])
 
-    const startTransition = useCallback(
-        (action: () => void | Promise<void>) => {
-            if (!isPending) {
-                setPending(true)
-            }
+    const startTransition = useCallback((action: () => void | Promise<void>) => {
+        if (!isPending) {
+            setPending(true)
+        }
 
-            unmounts.current.push(
-                schedule(action, () => {
-                    setPending(false)
-                    unmounts.current.shift()
-                }),
-            )
-        },
-    )
+        unmounts.current.push(
+            schedule(action, () => {
+                setPending(false)
+                unmounts.current.shift()
+            }),
+        )
+    })
 
     useEffect(() => {
         return () => {

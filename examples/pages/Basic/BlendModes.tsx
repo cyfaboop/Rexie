@@ -1,13 +1,5 @@
 import * as PIXI from 'pixi.js'
-import {
-    h,
-    memo,
-    useRef,
-    useEffect,
-    useTransition,
-    FC,
-    useContext,
-} from 'rexie'
+import { h, memo, useRef, useEffect, useTransition, FC, useContext } from 'rexie'
 
 import { Loading } from '../../components/Loading'
 import { AppContext } from 'examples'
@@ -61,9 +53,7 @@ export const BlendModes: FC<{
     const [isPending, startTransitioin] = useTransition()
     useEffect(() => {
         startTransitioin(async () => {
-            pandaTexture.current = await PIXI.Assets.load(
-                'https://pixijs.com/assets/panda.png',
-            )
+            pandaTexture.current = await PIXI.Assets.load('https://pixijs.com/assets/panda.png')
             rainbowGradient.current = await PIXI.Assets.load(
                 'https://pixijs.com/assets/rainbow-gradient.png',
             )
@@ -71,12 +61,7 @@ export const BlendModes: FC<{
     }, [])
 
     useEffect(() => {
-        if (
-            !wrapper.current ||
-            !pandaTexture.current ||
-            !rainbowGradient.current
-        )
-            return
+        if (!wrapper.current || !pandaTexture.current || !rainbowGradient.current) return
 
         for (let i = 0; i < allBlendModes.length; i++) {
             const container = new PIXI.Container()
@@ -134,9 +119,5 @@ export const BlendModes: FC<{
         }
     }, [isPending])
 
-    return (
-        <container>
-            {isPending ? <Loading /> : <container ref={wrapper} />}
-        </container>
-    )
+    return <container>{isPending ? <Loading /> : <container ref={wrapper} />}</container>
 })

@@ -1,14 +1,6 @@
 import { Ref } from './ref'
 import { isFunction } from './util'
-import {
-    Children,
-    Fiber,
-    FiberFC,
-    FiberHostBase,
-    ExternalPropsOf,
-    Key,
-    PropsOf,
-} from './fiber'
+import { Children, Fiber, FiberFC, FiberHostBase, ExternalPropsOf, Key, PropsOf } from './fiber'
 import { FIBER_TYPE } from './symbols'
 import { ExternalFC, FC } from './component'
 
@@ -62,11 +54,7 @@ export function normalizeChildren(children: Children) {
 }
 
 export function isValidElement(obj: unknown): obj is Fiber {
-    return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        (obj as Fiber).$$typeof === FIBER_TYPE
-    )
+    return typeof obj === 'object' && obj !== null && (obj as Fiber).$$typeof === FIBER_TYPE
 }
 
 function createFiber<T extends FC<any> | keyof JSX.IntrinsicElements>(

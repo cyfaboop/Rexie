@@ -15,9 +15,7 @@ export function createContext<T>(defaultValue: T) {
     const subscribers = new Set<Subscriber>()
 
     const getCurrentValue = () => {
-        return contextStack.length > 0
-            ? contextStack[contextStack.length - 1]
-            : defaultValue
+        return contextStack.length > 0 ? contextStack[contextStack.length - 1] : defaultValue
     }
 
     return {

@@ -1,23 +1,9 @@
 import { AppContext } from 'examples'
 import { Loading } from 'examples/components/Loading'
 import * as PIXI from 'pixi.js'
-import {
-    h,
-    FC,
-    memo,
-    useRef,
-    useEffect,
-    useTransition,
-    useContext,
-    useCallback,
-} from 'rexie'
+import { h, FC, memo, useRef, useEffect, useTransition, useContext, useCallback } from 'rexie'
 
-const alienFrames = [
-    'eggHead.png',
-    'flowerTop.png',
-    'helmlok.png',
-    'skully.png',
-]
+const alienFrames = ['eggHead.png', 'flowerTop.png', 'helmlok.png', 'skully.png']
 
 export const CacheAsTexture: FC<{
     screen: { width: number; height: number }
@@ -29,9 +15,7 @@ export const CacheAsTexture: FC<{
 
     useEffect(() => {
         startTransition(async () => {
-            await PIXI.Assets.load(
-                'https://pixijs.com/assets/spritesheet/monsters.json',
-            )
+            await PIXI.Assets.load('https://pixijs.com/assets/spritesheet/monsters.json')
         })
     }, [])
 

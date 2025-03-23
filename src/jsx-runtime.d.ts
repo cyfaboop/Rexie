@@ -26,8 +26,7 @@ declare global {
 
         export type Element = Fiber
 
-        export interface TextElement
-            extends ContainerElement<PIXI.TextOptions> {
+        export interface TextElement extends ContainerElement<PIXI.TextOptions> {
             ref?: Ref<PIXI.Text>
             /** The anchor point of the text. */
             anchor?: PIXI.PointData | number
@@ -53,10 +52,7 @@ declare global {
              * PIXI.HTMLTextStyleOptions
              * }
              */
-            style?:
-                | PIXI.TextStyle
-                | Partial<PIXI.TextStyle>
-                | PIXI.TextStyleOptions
+            style?: PIXI.TextStyle | Partial<PIXI.TextStyle> | PIXI.TextStyleOptions
             /** Whether or not to round the x/y position. */
             roundPixels?: boolean
             /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
@@ -65,8 +61,7 @@ declare global {
             height?: number
         }
 
-        export interface SpriteElement
-            extends ContainerElement<PIXI.SpriteOptions | PIXI.Texture> {
+        export interface SpriteElement extends ContainerElement<PIXI.SpriteOptions | PIXI.Texture> {
             ref?: Ref<PIXI.Sprite>
             /** The texture that the sprite is using. */
             texture?: PIXI.Texture
@@ -91,15 +86,12 @@ declare global {
         }
 
         export interface GraphicsElement
-            extends ContainerElement<
-                PIXI.GraphicsOptions | PIXI.GraphicsContext
-            > {
+            extends ContainerElement<PIXI.GraphicsOptions | PIXI.GraphicsContext> {
             ref?: Ref<PIXI.Graphics>
         }
 
-        export interface ContainerElement<
-            T = PIXI.ContainerOptions<PIXI.ContainerChild>,
-        > extends IntrinsicAttributes,
+        export interface ContainerElement<T = PIXI.ContainerOptions<PIXI.ContainerChild>>
+            extends IntrinsicAttributes,
                 Options<T>,
                 FederatedEventHandler {
             ref?: Ref<PIXI.Container>

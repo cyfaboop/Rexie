@@ -29,10 +29,7 @@ export const Advanced: FC<{
     const [currentPage, setCurrentPage] = useState('Slots')
     const { propsArr, lineWrapY, childScreen } = useLayoutData(pages, screen)
 
-    const DynamicComponent = useMemo(
-        () => Components[currentPage] || Slots,
-        [currentPage],
-    )
+    const DynamicComponent = useMemo(() => Components[currentPage] || Slots, [currentPage])
 
     return (
         <container>

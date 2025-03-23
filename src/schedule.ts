@@ -133,8 +133,7 @@ function removeTask(task: Task, after?: () => void) {
 }
 
 function scheduleWork(work: () => void) {
-    if (useMicrotask && typeof queueMicrotask !== 'undefined')
-        queueMicrotask(work)
+    if (useMicrotask && typeof queueMicrotask !== 'undefined') queueMicrotask(work)
     else if (typeof MessageChannel !== 'undefined') {
         const { port1, port2 } = new MessageChannel()
         port1.onmessage = work

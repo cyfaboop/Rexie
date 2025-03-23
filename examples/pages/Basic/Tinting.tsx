@@ -1,14 +1,5 @@
 import * as PIXI from 'pixi.js'
-import {
-    h,
-    memo,
-    useRef,
-    useEffect,
-    useTransition,
-    FC,
-    useContext,
-    useMemo,
-} from 'rexie'
+import { h, memo, useRef, useEffect, useTransition, FC, useContext, useMemo } from 'rexie'
 
 import { Loading } from '../../components/Loading'
 import { AppContext } from 'examples'
@@ -33,9 +24,7 @@ export const Tinting: FC<{
 
     useEffect(() => {
         startTransitioin(async () => {
-            texture.current = await PIXI.Assets.load(
-                'https://pixijs.com/assets/eggHead.png',
-            )
+            texture.current = await PIXI.Assets.load('https://pixijs.com/assets/eggHead.png')
         })
     }, [])
 

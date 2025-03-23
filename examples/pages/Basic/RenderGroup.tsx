@@ -1,13 +1,5 @@
 import * as PIXI from 'pixi.js'
-import {
-    h,
-    FC,
-    memo,
-    useRef,
-    useEffect,
-    useTransition,
-    useContext,
-} from 'rexie'
+import { h, FC, memo, useRef, useEffect, useTransition, useContext } from 'rexie'
 
 import { AppContext } from 'examples'
 import { Loading } from 'examples/components/Loading'
@@ -22,9 +14,7 @@ export const RenderGroup: FC<{
 
     useEffect(() => {
         startTransition(async () => {
-            treeTexture.current = await PIXI.Assets.load(
-                `https://pixijs.com/assets/tree.png`,
-            )
+            treeTexture.current = await PIXI.Assets.load(`https://pixijs.com/assets/tree.png`)
         })
     }, [])
 

@@ -13,16 +13,10 @@ interface SuspenseProps {
 const SuspenseContenxt = createContext<Children>(null)
 
 export function Suspense(props: SuspenseProps) {
-    return h(
-        SuspenseContenxt.Provider,
-        { value: props.fallback },
-        props.children,
-    )
+    return h(SuspenseContenxt.Provider, { value: props.fallback }, props.children)
 }
 
-export function lazy<T extends ExternalFC>(
-    load: () => Promise<{ default: T }>,
-) {
+export function lazy<T extends ExternalFC>(load: () => Promise<{ default: T }>) {
     let error: unknown
     let component: undefined | ExternalFC
 

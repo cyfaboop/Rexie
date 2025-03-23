@@ -22,10 +22,7 @@ const pages = [
     'Offscreen Canvas',
 ]
 
-const Components: Record<
-    string,
-    FC<{ screen: { width: number; height: number } }>
-> = {
+const Components: Record<string, FC<{ screen: { width: number; height: number } }>> = {
     Basic: Basic,
     Advanced: Advanced,
 }

@@ -1,14 +1,5 @@
 import * as PIXI from 'pixi.js'
-import {
-    h,
-    memo,
-    useRef,
-    useEffect,
-    useTransition,
-    useState,
-    useContext,
-    FC,
-} from 'rexie'
+import { h, memo, useRef, useEffect, useTransition, useState, useContext, FC } from 'rexie'
 
 import { AppContext } from 'examples'
 import { Loading } from '../../components/Loading'
@@ -24,9 +15,7 @@ export const Container: FC<{
 
     useEffect(() => {
         startTransitioin(async () => {
-            texture.current = await PIXI.Assets.load(
-                'https://pixijs.com/assets/bunny.png',
-            )
+            texture.current = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png')
 
             const arr: PIXI.PointData[] = []
             for (let i = 0; i < 25; i++) {
@@ -63,12 +52,7 @@ export const Container: FC<{
                     <Loading />
                 ) : (
                     bunnies.map((bunny, index) => (
-                        <sprite
-                            key={index}
-                            options={texture.current}
-                            x={bunny.x}
-                            y={bunny.y}
-                        />
+                        <sprite key={index} options={texture.current} x={bunny.x} y={bunny.y} />
                     ))
                 )}
             </container>

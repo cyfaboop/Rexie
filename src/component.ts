@@ -1,13 +1,7 @@
 import { normalizeChildren } from './h'
 import { resetHookIndex } from './hooks'
 import { createNode } from './pixijs'
-import {
-    IntrinsicAttributes,
-    Children,
-    Fiber,
-    FiberFC,
-    FiberHost,
-} from './fiber'
+import { IntrinsicAttributes, Children, Fiber, FiberFC, FiberHost } from './fiber'
 import { reconcileChildren } from './reconcile'
 
 export interface ExternalFC<P = IntrinsicAttributes> extends Omit<FC<P>, 'id'> {
@@ -67,19 +61,11 @@ function findRoot(fiber: Fiber) {
 function updateFC(fiber: FiberFC) {
     resetHookIndex()
     setCurrentFC(fiber)
-    fiber.child = reconcileChildren(
-        fiber,
-        normalizeChildren((fiber.type as FC)(fiber.props)),
-    )
+    fiber.child = reconcileChildren(fiber, normalizeChildren((fiber.type as FC)(fiber.props)))
 }
 
 export function isMemoizedComponent(fiber: Fiber) {
-    if (
-        fiber.fc &&
-        fiber.type.memo &&
-        fiber.type === fiber.old?.type &&
-        fiber.old.props
-    ) {
+    if (fiber.fc && fiber.type.memo && fiber.type === fiber.old?.type && fiber.old.props) {
         const shouldUpdate = fiber.type.shouldUpdate || havePropsChanged
         if (!shouldUpdate(fiber.props, fiber.old.props)) {
             return true
@@ -88,10 +74,7 @@ export function isMemoizedComponent(fiber: Fiber) {
     return false
 }
 
-function havePropsChanged(
-    a: Record<string, unknown>,
-    b: Record<string, unknown>,
-) {
+function havePropsChanged(a: Record<string, unknown>, b: Record<string, unknown>) {
     for (const k in a) {
         if (!(k in b)) {
             return true

@@ -1,15 +1,7 @@
 import { AppContext } from 'examples'
 import { Loading } from 'examples/components/Loading'
 import * as PIXI from 'pixi.js'
-import {
-    h,
-    FC,
-    memo,
-    useRef,
-    useEffect,
-    useTransition,
-    useContext,
-} from 'rexie'
+import { h, FC, memo, useRef, useEffect, useTransition, useContext } from 'rexie'
 
 export const MeshPlane: FC<{
     screen: { width: number; height: number }
@@ -21,9 +13,7 @@ export const MeshPlane: FC<{
 
     useEffect(() => {
         startTransition(async () => {
-            const texture = await PIXI.Assets.load(
-                'https://pixijs.com/assets/bg_grass.jpg',
-            )
+            const texture = await PIXI.Assets.load('https://pixijs.com/assets/bg_grass.jpg')
             plane.current = new PIXI.MeshPlane({
                 texture,
                 verticesX: 10,
@@ -55,9 +45,5 @@ export const MeshPlane: FC<{
         }
     }, [isPending])
 
-    return (
-        <container ref={container}>
-            {isPending ? <Loading /> : undefined}
-        </container>
-    )
+    return <container ref={container}>{isPending ? <Loading /> : undefined}</container>
 })
