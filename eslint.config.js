@@ -34,14 +34,4 @@ export default defineConfig([
     {
         ignores: ['**/dist/', '**/temp/', '**/scripts/'],
     },
-    {
-        overrides: [
-            {
-                files: ['tests/**/*'],
-                env: {
-                    jest: true,
-                },
-            },
-        ],
-    },
 ])

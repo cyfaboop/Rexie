@@ -57,7 +57,7 @@
         "@eslint/js": "^9.23.0",
         "@jest/globals": "^29.7.0",
         "@types/jest": "^29.5.14",
-        "@types/node": "^22.13.10",
+        "@types/node": "^22.13.11",
         "esbuild": "^0.25.1",
         "eslint": "^9.23.0",
         "eslint-plugin-react": "^7.37.4",
@@ -69,7 +69,7 @@
         "picocolors": "^1.1.1",
         "prettier": "^3.5.3",
         "rimraf": "^6.0.1",
-        "simple-git-hooks": "^2.11.1",
+        "simple-git-hooks": "^2.12.1",
         "ts-jest": "^29.2.6",
         "ts-node": "^10.9.2",
         "typescript": "~5.7.3",
@@ -77,6 +77,6 @@
     },
     "packageManager": "pnpm@10.2.1+sha512.398035c7bd696d0ba0b10a688ed558285329d27ea994804a52bad9167d8e3a72bcb993f9699585d3ca25779ac64949ef422757a6c31102c12ab932e5cbe5cc92",
     "dependencies": {
-        "pixi.js": "^8.8.1"
+        "pixi.js": "^8.9.0"
     }
 }
