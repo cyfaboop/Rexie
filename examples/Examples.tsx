@@ -58,12 +58,13 @@ export const Examples = () => {
 
     return (
         <container>
-            {propsArr.map(props => (
+            {propsArr.map(p => (
                 <Button
-                    {...props}
-                    active={currentPage === props.text}
+                    {...p}
+                    key={p.text}
+                    active={currentPage === p.text}
                     onClick={() => {
-                        setCurrentPage(props.text)
+                        setCurrentPage(p.text)
                     }}
                 />
             ))}

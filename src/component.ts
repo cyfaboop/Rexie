@@ -80,7 +80,7 @@ export function isMemoizedComponent(fiber: Fiber) {
         fiber.type === fiber.old?.type &&
         fiber.old.props
     ) {
-        let shouldUpdate = fiber.type.shouldUpdate || havePropsChanged
+        const shouldUpdate = fiber.type.shouldUpdate || havePropsChanged
         if (!shouldUpdate(fiber.props, fiber.old.props)) {
             return true
         }
@@ -92,12 +92,12 @@ function havePropsChanged(
     a: Record<string, unknown>,
     b: Record<string, unknown>,
 ) {
-    for (let k in a) {
+    for (const k in a) {
         if (!(k in b)) {
             return true
         }
     }
-    for (let k in b) {
+    for (const k in b) {
         if (a[k] !== b[k]) {
             return true
         }

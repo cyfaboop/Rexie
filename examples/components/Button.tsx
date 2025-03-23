@@ -45,8 +45,8 @@ export function generateButtonLayoutProps(
         (prev, cur) => {
             let x = prev.x
             let line = prev.line
-            let text = calcButtonTextSize(cur)
-            let btnWidth = Math.max(text.width, width) + padding
+            const text = calcButtonTextSize(cur)
+            const btnWidth = Math.max(text.width, width) + padding
             const props = {
                 key: cur,
                 text: cur,
@@ -137,9 +137,10 @@ export const Button: FC<{
             () => !active && setState('hover'),
             [active],
         )
-        const onRelease = useCallback(() => {
-            !active && setState('normal')
-        }, [active])
+        const onRelease = useCallback(
+            () => !active && setState('normal'),
+            [active],
+        )
 
         useEffect(() => {
             button.current

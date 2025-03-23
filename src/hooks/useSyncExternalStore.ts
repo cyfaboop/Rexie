@@ -50,7 +50,10 @@ function didSnapshotChange<T>(instance: { value: T; getSnapshot: () => T }) {
     try {
         const nextValue = latestGetSnapshot()
         return !Object.is(prevValue, nextValue)
-    } catch (error) {
+    } catch (err) {
+        if (__DEV__) {
+            console.error(err)
+        }
         return true
     }
 }

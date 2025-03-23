@@ -77,6 +77,7 @@ export const Tinting: FC<{
             ) : (
                 new Array(20).fill(null).map((_, index) => (
                     <sprite
+                        key={index}
                         ref={el => {
                             dudes.current[index] = el
                         }}

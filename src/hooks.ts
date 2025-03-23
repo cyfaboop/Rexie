@@ -221,11 +221,14 @@ function getHookState<T extends HookState = HookState>(
     return [list[index], current] as any
 }
 
-function createHookCallback<T extends Function>(callback: T, current: Fiber) {
-    return ((...args: any[]) => {
+function createHookCallback<T extends (...args: any[]) => any>(
+    callback: T,
+    current: Fiber,
+) {
+    return ((...args: Parameters<T>) => {
         setCurrentFC(current)
-        return callback.apply(null, args)
-    }) as any as T
+        return callback(...args)
+    }) as T
 }
 
 function isChanged(a?: Dependencies, b?: Dependencies) {

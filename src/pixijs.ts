@@ -41,6 +41,7 @@ export function updateNode(
                 key === 'children' ||
                 key === 'options'
             ) {
+                return
             } else if (key[0] === 'o' && key[1] === 'n') {
                 // TODO Optimize event handling: hitArea, interactive, bubble, etc.
                 key = key.slice(2).toLowerCase()

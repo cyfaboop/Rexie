@@ -18,7 +18,9 @@ export function useImperativeHandle<T, R extends T>(
                 const result = ref(create())
                 return () => {
                     ref(null)
-                    isFunction(result) && result()
+                    if (isFunction(result)) {
+                        result()
+                    }
                 }
             } else if (ref) {
                 ref.current = create()

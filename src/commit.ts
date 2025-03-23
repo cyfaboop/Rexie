@@ -69,7 +69,11 @@ function commitSiblingCommand(fiber?: FiberFinish) {
 
 function attachRef(ref?: Ref, node?: RexieNode) {
     if (ref) {
-        isFunction(ref) ? ref(node) : (ref.current = node)
+        if (isFunction(ref)) {
+            ref(node)
+        } else {
+            ref.current = node
+        }
     }
 }
 

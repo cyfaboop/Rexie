@@ -97,7 +97,7 @@ export function Fragment(props: ExternalPropsOf<ExternalFC>) {
     return props.children as JSX.Element
 }
 
-export function memo<P = {}>(
+export function memo<P = object>(
     component: ExternalFC<P>,
     comparer?: ExternalFC<P>['shouldUpdate'],
 ) {

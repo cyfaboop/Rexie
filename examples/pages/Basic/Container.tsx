@@ -48,7 +48,6 @@ export const Container: FC<{
         const animate = (time: PIXI.Ticker) => {
             if (!container.current) return
             container.current.rotation -= 0.01 * time.deltaTime
-            container.current.pivot
         }
 
         app.ticker.add(animate)
@@ -63,8 +62,9 @@ export const Container: FC<{
                 {isPending ? (
                     <Loading />
                 ) : (
-                    bunnies.map(bunny => (
+                    bunnies.map((bunny, index) => (
                         <sprite
+                            key={index}
                             options={texture.current}
                             x={bunny.x}
                             y={bunny.y}

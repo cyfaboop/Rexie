@@ -13,8 +13,9 @@ export function reconcileChildren(currentFiber: Fiber, newChildren: Fiber[]) {
         oldChild = oldChildren[index] as Fiber | undefined
         newChild.old = oldChild
         newChild.parent = currentFiber
-        prevChild && (prevChild.sibling = newChild)
-
+        if (prevChild) {
+            prevChild.sibling = newChild
+        }
         const newChildKT = keyAndType(newChild)
         if (oldChild && newChildKT === keyAndType(oldChild)) {
             newChild.cmd = Command.UPDATE
@@ -49,7 +50,7 @@ function mergeOldFiber(target: Fiber, source: Fiber) {
 }
 
 function createKeyIndexMap(children: Fiber[]) {
-    let map: Record<string, number | undefined> = {}
+    const map: Record<string, number | undefined> = {}
     for (let i = 0; i < children.length; i++) {
         if (children[i].key === undefined) continue
         map[keyAndType(children[i])] = i

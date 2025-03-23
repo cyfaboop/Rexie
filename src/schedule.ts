@@ -117,7 +117,9 @@ function resolveFirstTask() {
     const task = taskQueue.shift()
     if (task) {
         task.next = undefined
-        !task.cancel && task.onResolved?.()
+        if (!task.cancel) {
+            task.onResolved?.()
+        }
         task.waitTasks?.forEach(task => !task.cancel && task.onResolved?.())
     }
 }
