@@ -18,7 +18,7 @@ const TASK_YIELD_THRESHOLD_MS = 5
  * For example, search suggestions, data loading, etc., which can be processed later.
  * Marks the wrapped update as non-urgent, and the action will be executed after the UI update.
  */
-export function startTransition(action: () => void | Promise<void>): void {
+export function startTransition(action: () => void | Promise<void>) {
     schedule(action)
 }
 
@@ -33,7 +33,7 @@ export function schedule(action: Action, onResolved?: () => void) {
     }
 }
 
-function processTaskQueue(): void {
+function processTaskQueue() {
     deadline = performance.now() + TASK_YIELD_THRESHOLD_MS
 
     while (firstTask() && !shouldYield()) {
@@ -95,7 +95,7 @@ export function shouldYield(): boolean {
     return performance.now() >= deadline
 }
 
-function resolveAsyncTask(task: Task): void {
+function resolveAsyncTask(task: Task) {
     const first = firstTask()
     if (first === task) {
         resolveFirstTask()
@@ -115,7 +115,7 @@ function firstTask(): Task {
     return taskQueue[0]
 }
 
-function resolveFirstTask(): void {
+function resolveFirstTask() {
     const task = taskQueue.shift()
     if (task) {
         task.next = undefined
@@ -126,7 +126,7 @@ function resolveFirstTask(): void {
     }
 }
 
-function removeTask(task: Task, after?: () => void): void {
+function removeTask(task: Task, after?: () => void) {
     const index = taskQueue.findIndex(t => t === task)
     if (index > -1) {
         taskQueue.splice(index, 1)
@@ -134,7 +134,7 @@ function removeTask(task: Task, after?: () => void): void {
     }
 }
 
-function scheduleWork(work: () => void): void {
+function scheduleWork(work: () => void) {
     if (useMicrotask && typeof queueMicrotask !== 'undefined') queueMicrotask(work)
     else if (typeof MessageChannel !== 'undefined') {
         const { port1, port2 } = new MessageChannel()

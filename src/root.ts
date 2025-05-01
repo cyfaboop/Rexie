@@ -31,7 +31,7 @@ export class FiberRoot {
      * @param fiber The fiber tree to be rendered.
      * @param sync Whether to render synchronously or asynchronously.
      */
-    public render(fiber: Fiber, sync = false): void {
+    public render(fiber: Fiber, sync = false) {
         fiber.root = this
         this._unmount = update(fiber, sync) || undefined
     }
@@ -39,7 +39,7 @@ export class FiberRoot {
     /**
      * Unmounts the fiber tree.
      */
-    public unmount(): void {
+    public unmount() {
         this._unmount?.()
         this._unmount = undefined
         this.deletions = []

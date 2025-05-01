@@ -18,7 +18,7 @@ export interface FC<P = IntrinsicAttributes> {
 
 let currentFC: Fiber | undefined
 
-export function setCurrentFC(fiber: Fiber): void {
+export function setCurrentFC(fiber: Fiber) {
     currentFC = fiber
 }
 
@@ -30,7 +30,7 @@ export function getCurrentFC(): Fiber {
     return currentFC
 }
 
-export function updateComponent(fiber: Fiber): void {
+export function updateComponent(fiber: Fiber) {
     fiber.root = findRoot(fiber)
     if (!fiber.root) {
         throw new Error('Not found the root.')
@@ -58,13 +58,13 @@ function findRoot(fiber: Readonly<Fiber>): FiberRoot | undefined {
     }
 }
 
-function updateFC(fiber: FiberFC): void {
+function updateFC(fiber: FiberFC) {
     resetHookIndex()
     setCurrentFC(fiber)
     reconcileFiberChildrenShallowly(fiber, normalizeChildrenToFibers(fiber.type(fiber.props)))
 }
 
-function updateHost(fiber: FiberHost): void {
+function updateHost(fiber: FiberHost) {
     fiber.parentNode = findClosestHostParentNode(fiber)
     if (!fiber.parentNode) {
         throw new Error('Not found the parent node.')

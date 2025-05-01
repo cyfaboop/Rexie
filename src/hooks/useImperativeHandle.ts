@@ -14,7 +14,7 @@ export function useImperativeHandle<T, R extends T>(
     ref: Ref<T | null>,
     create: () => R,
     dependencies?: Dependencies,
-): void {
+) {
     useLayout(
         () => {
             if (isFunction(ref)) {

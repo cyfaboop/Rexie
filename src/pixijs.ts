@@ -30,7 +30,7 @@ export function updateNode(
     node: PIXI.Container,
     newProps: Readonly<Record<string, any>>,
     oldProps: Readonly<Record<string, any>>,
-): void {
+) {
     new Set([...Object.keys(newProps), ...Object.keys(oldProps)]).forEach(key => {
         const newProp = newProps[key]
         const oldProp = oldProps[key]
@@ -55,7 +55,7 @@ export function updateNode(
     })
 }
 
-export function placeNode(parent: RexieNode, newChild: RexieNode, oldChild?: RexieNode): void {
+export function placeNode(parent: RexieNode, newChild: RexieNode, oldChild?: RexieNode) {
     if (oldChild) {
         parent.addChildAt(newChild, parent.getChildIndex(oldChild))
     } else {
@@ -63,7 +63,7 @@ export function placeNode(parent: RexieNode, newChild: RexieNode, oldChild?: Rex
     }
 }
 
-export function removeNode(child: RexieNode): void {
+export function removeNode(child: RexieNode) {
     child.removeFromParent()
     // PixiJS ensures destroyed nodes are not removed again
     child.destroy({ children: true })

@@ -32,7 +32,7 @@ export type StateUpdater<S> = S | ((prevState: S) => S)
 
 let currentIndex = 0
 
-export function resetHookIndex(): void {
+export function resetHookIndex() {
     currentIndex = 0
 }
 
@@ -116,7 +116,7 @@ export function useReducer<S, A, I>(
  * @param setup Imperative function that can return a cleanup function.
  * @param dependencies If present, effect will only activate if the values in the list change (using ===).
  */
-export function useEffect(setup: EffectSetup, dependencies?: Dependencies): void {
+export function useEffect(setup: EffectSetup, dependencies?: Dependencies) {
     useEffectImplement(setup, HookType.Effect, dependencies)
 }
 
@@ -131,7 +131,7 @@ export function useEffect(setup: EffectSetup, dependencies?: Dependencies): void
  * @param dependencies If present, effect will only activate if the values in the list change (using ===).
  * ```
  */
-export function useLayout(setup: EffectSetup, dependencies?: Dependencies): void {
+export function useLayout(setup: EffectSetup, dependencies?: Dependencies) {
     useEffectImplement(setup, HookType.Layout, dependencies)
 }
 
@@ -139,7 +139,7 @@ function useEffectImplement(
     setup: EffectSetup,
     type: HookType.Effect | HookType.Layout,
     dependencies?: Dependencies,
-): void {
+) {
     const [hook, current] = getHookState<HookStateEffect>(currentIndex++)
     if (haveDependenciesChanged(hook[1], dependencies)) {
         hook[0] = createHookCallback(setup, current)

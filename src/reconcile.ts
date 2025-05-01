@@ -1,7 +1,7 @@
 import { isFunction } from './util'
 import { Fiber, Command } from './fiber'
 
-export function reconcileFiberChildrenShallowly(currentFiber: Fiber, newChildren: Fiber[]): void {
+export function reconcileFiberChildrenShallowly(currentFiber: Fiber, newChildren: Fiber[]) {
     let oldChild: Fiber | undefined
     let prevChild: Fiber | undefined
     const oldChildren = currentFiber.children || []
@@ -54,7 +54,7 @@ function generateKeyWithType(v: Readonly<Fiber>): string {
     return `${v.key?.toString() || ''}${isFunction(v.type) ? v.type.id : v.type}`
 }
 
-function extendFiber(target: Fiber, source: Fiber): void {
+function extendFiber(target: Fiber, source: Fiber) {
     target.ref = source.ref
     target.node = source.node
     target.hooks = source.hooks

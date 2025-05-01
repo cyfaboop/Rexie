@@ -3,7 +3,7 @@ import { commitWork } from './commit'
 import { shouldYield } from './schedule'
 import { isMemoizedComponent, updateComponent } from './component'
 
-export function performSyncWork(fiber?: Fiber): void {
+export function performSyncWork(fiber?: Fiber) {
     while (fiber) {
         fiber = performUnitOfWork(fiber)
     }
