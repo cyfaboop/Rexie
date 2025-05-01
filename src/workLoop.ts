@@ -3,7 +3,7 @@ import { commitWork } from './commit'
 import { shouldYield } from './schedule'
 import { isMemoizedComponent, updateComponent } from './component'
 
-export function performSyncWork(fiber?: Fiber) {
+export function performSyncWork(fiber?: Fiber): void {
     while (fiber) {
         fiber = performUnitOfWork(fiber)
     }
@@ -15,11 +15,13 @@ export function performConcurrentWork(fiber?: Fiber) {
     }
 
     if (fiber) {
-        return () => performConcurrentWork(fiber)
+        return () => {
+            return performConcurrentWork(fiber)
+        }
     }
 }
 
-function performUnitOfWork(fiber: Fiber) {
+function performUnitOfWork(fiber: Fiber): Fiber | undefined {
     if (isMemoizedComponent(fiber)) {
         fiber.memo = true
     } else {

@@ -10,11 +10,19 @@ export interface Context<T> {
     useContext: () => T
 }
 
-export function createContext<T>(defaultValue: T) {
+/**
+ * Creates a context object with a provider and a consumer.
+ * The provider can be used to set the context value, and the consumer can be used to get the context value.
+ *
+ * @param defaultValue The default value of the context.
+ *
+ * @returns A context object with a provider and a consumer.
+ */
+export function createContext<T>(defaultValue: T): Context<T> {
     const contextStack: ContextStack<T> = []
     const subscribers = new Set<Subscriber>()
 
-    const getCurrentValue = () => {
+    function getCurrentValue(): T {
         return contextStack.length > 0 ? contextStack[contextStack.length - 1] : defaultValue
     }
 
@@ -36,7 +44,7 @@ export function createContext<T>(defaultValue: T) {
         }) as ExternalFC<{
             value: T
         }>,
-        useContext: () => {
+        useContext: (): T => {
             const [value] = useState(getCurrentValue)
             return value
         },
@@ -47,8 +55,10 @@ export function createContext<T>(defaultValue: T) {
  * Returns the current context value, as given by the nearest context provider for the given context.
  * When the provider updates, this Hook will trigger a rerender with the latest context value.
  *
- * @param context The context you want to use
+ * @param context The context you want to use.
+ *
+ * @returns The current context value.
  */
-export function useContext<T>(contextType: Context<T>) {
+export function useContext<T>(contextType: Context<T>): T {
     return contextType.useContext()
 }

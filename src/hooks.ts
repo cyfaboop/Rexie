@@ -1,5 +1,5 @@
 import { RefObject } from './ref'
-import { isFunction } from './util'
+import { isEqual, isFunction } from './util'
 import { Fiber } from './fiber'
 import { update } from './root'
 import { getCurrentFC, setCurrentFC } from './component'
@@ -31,18 +31,24 @@ export type Dependencies = ReadonlyArray<unknown>
 export type StateUpdater<S> = S | ((prevState: S) => S)
 
 let currentIndex = 0
-export function resetHookIndex() {
+
+export function resetHookIndex(): void {
     currentIndex = 0
 }
 
 /**
  * Returns a stateful value, and a function to update it.
- * @param initialState The initial value (or a function that returns the initial value)
+ *
+ * @param initialState The initial value (or a function that returns the initial value).
+ *
+ * @returns A tuple containing the current state and a function to update it.
  */
 export function useState<S>(initialState: S | (() => S)): [S, Dispatch<StateUpdater<S>>]
 export function useState<S = undefined>(): [S | undefined, Dispatch<StateUpdater<S | undefined>>]
-export function useState<S = undefined>(initialState?: S | (() => S)) {
-    return useReducer<S | (() => S) | undefined, StateUpdater<S | (() => S) | undefined>>(
+export function useState<S = undefined>(
+    initialState?: S | (() => S),
+): [S | undefined, Dispatch<StateUpdater<S | undefined>>] {
+    return useReducer(
         (prev, action) => (isFunction(action) ? action(prev) : action),
         // React will call your initializer function when initializing the component,
         // and store its return value as the initial state.
@@ -56,8 +62,11 @@ export function useState<S = undefined>(initialState?: S | (() => S)) {
  * `useReducer` is usually preferable to `useState` when you have complex state logic that involves
  * multiple sub-values. It also lets you optimize performance for components that trigger deep
  * updates because you can pass `dispatch` down instead of callbacks.
- * @param reducer Given the current state and an action, returns the new state
- * @param initialState The initial value to store as state
+ *
+ * @param reducer Given the current state and an action, returns the new state.
+ * @param initialState The initial value to store as state.
+ *
+ * @returns A tuple containing the current state and a dispatch function.
  */
 export function useReducer<S, A>(reducer: Reducer<S, A>, initialState: S): [S, Dispatch<A>]
 /**
@@ -66,16 +75,23 @@ export function useReducer<S, A>(reducer: Reducer<S, A>, initialState: S): [S, D
  * `useReducer` is usually preferable to `useState` when you have complex state logic that involves
  * multiple sub-values. It also lets you optimize performance for components that trigger deep
  * updates because you can pass `dispatch` down instead of callbacks.
- * @param reducer Given the current state and an action, returns the new state
- * @param initialArg The initial argument to pass to the `init` function
- * @param init A function that, given the `initialArg`, returns the initial value to store as state
+ *
+ * @param reducer Given the current state and an action, returns the new state.
+ * @param initialArg The initial argument to pass to the `init` function.
+ * @param init A function that, given the `initialArg`, returns the initial value to store as state.
+ *
+ * @returns A tuple containing the current state and a dispatch function.
  */
 export function useReducer<S, A, I>(
     reducer: Reducer<S, A>,
     initialArg: I,
     init: (arg: I) => S,
 ): [S, Dispatch<A>]
-export function useReducer<S, A, I>(reducer: Reducer<S, A>, initialState: I, init?: (arg: I) => S) {
+export function useReducer<S, A, I>(
+    reducer: Reducer<S, A>,
+    initialState: I,
+    init?: (arg: I) => S,
+): [S, Dispatch<A>] {
     const [hookState, current] = getHookState<HookStateReducer>(currentIndex++)
 
     if (hookState.length === 0) {
@@ -97,10 +113,10 @@ export function useReducer<S, A, I>(reducer: Reducer<S, A>, initialState: I, ini
  * Accepts a function that contains imperative, possibly effectful code.
  * The effects run after browser paint, without blocking it.
  *
- * @param setup Imperative function that can return a cleanup function
- * @param dependencies If present, effect will only activate if the values in the list change (using Object.is).
+ * @param setup Imperative function that can return a cleanup function.
+ * @param dependencies If present, effect will only activate if the values in the list change (using ===).
  */
-export function useEffect(setup: EffectSetup, dependencies?: Dependencies) {
+export function useEffect(setup: EffectSetup, dependencies?: Dependencies): void {
     useEffectImplement(setup, HookType.Effect, dependencies)
 }
 
@@ -111,10 +127,11 @@ export function useEffect(setup: EffectSetup, dependencies?: Dependencies) {
  * after all DOM mutations but before the browser has a chance to paint.
  * Prefer the standard `useEffect` hook when possible to avoid blocking visual updates.
  *
- * @param setup Imperative function that can return a cleanup function
- * @param dependencies If present, effect will only activate if the values in the list change (using Object.is).
+ * @param setup Imperative function that can return a cleanup function.
+ * @param dependencies If present, effect will only activate if the values in the list change (using ===).
+ * ```
  */
-export function useLayout(setup: EffectSetup, dependencies?: Dependencies) {
+export function useLayout(setup: EffectSetup, dependencies?: Dependencies): void {
     useEffectImplement(setup, HookType.Layout, dependencies)
 }
 
@@ -122,9 +139,9 @@ function useEffectImplement(
     setup: EffectSetup,
     type: HookType.Effect | HookType.Layout,
     dependencies?: Dependencies,
-) {
+): void {
     const [hook, current] = getHookState<HookStateEffect>(currentIndex++)
-    if (isChanged(hook[1], dependencies)) {
+    if (haveDependenciesChanged(hook[1], dependencies)) {
         hook[0] = createHookCallback(setup, current)
         hook[1] = dependencies
         current.hooks?.[type].push(hook as Required<HookStateEffect>)
@@ -133,9 +150,16 @@ function useEffectImplement(
 
 /**
  * Returns a memoized version of the callback that only changes if one of the `dependencies`
- * has changed (using Object.is).
+ * has changed (using ===).
+ * This is useful when passing callbacks to optimized child components
+ * that rely on reference equality to prevent unnecessary renders.
+ *
+ * @param fn The function to memoize.
+ * @param dependencies If present, memoized value will only activate if the values in the list change (using ===).
+ *
+ * @returns A memoized version of the callback.
  */
-export function useCallback<T extends Function>(fn: T, dependencies?: Dependencies) {
+export function useCallback<T extends Function>(fn: T, dependencies?: Dependencies): T {
     return useMemo(() => fn, dependencies)
 }
 
@@ -146,7 +170,9 @@ export function useCallback<T extends Function>(fn: T, dependencies?: Dependenci
  * Note that `useRef()` is useful for more than the `ref` attribute. It’s handy for keeping any mutable
  * value around similar to how you’d use instance fields in classes.
  *
- * @param initialValue the initial value to store in the ref object
+ * @param initialValue the initial value to store in the ref object.
+ *
+ * @returns A mutable ref object whose `.current` property is initialized to the passed argument.
  */
 export function useRef<T>(initialValue: T): RefObject<T>
 export function useRef<T>(initialValue: T | null): RefObject<T>
@@ -155,10 +181,20 @@ export function useRef<T = undefined>(initialValue?: T): RefObject<T | undefined
     return useMemo(() => ({ current: initialValue }))
 }
 
+/**
+ * Returns a memoized value that only changes if one of the `dependencies` has changed (using ===).
+ * This hook is useful to optimize performance for expensive calculations that don’t need to be recalculated
+ * on every render.
+ *
+ * @param calculateValue A function that returns the value to be memoized.
+ * @param dependencies If present, memoized value will only activate if the values in the list change (using ===).
+ *
+ * @returns The memoized value.
+ */
 export function useMemo<T>(calculateValue: () => T, dependencies: Dependencies = []): T {
     const [hook, current] = getHookState<HookStateMemo>(currentIndex++)
 
-    if (isChanged(hook[1], dependencies)) {
+    if (haveDependenciesChanged(hook[1], dependencies)) {
         hook[1] = dependencies
         hook[0] = createHookCallback(calculateValue, current)()
     }
@@ -166,10 +202,6 @@ export function useMemo<T>(calculateValue: () => T, dependencies: Dependencies =
     return hook[0]
 }
 
-/**
- * Get a hook's state from the currentComponent
- * @param index The index of the hook to get
- */
 function getHookState<T extends HookState = HookState>(index: number): [Partial<T>, Fiber] {
     const current = getCurrentFC()
     if (!current.hooks) {
@@ -189,13 +221,13 @@ function getHookState<T extends HookState = HookState>(index: number): [Partial<
     return [list[index], current] as any
 }
 
-function createHookCallback<T extends (...args: any[]) => any>(callback: T, current: Fiber) {
-    return ((...args: Parameters<T>) => {
+function haveDependenciesChanged(a?: Dependencies, b?: Dependencies): boolean {
+    return !a || a.length !== b?.length || b.some((arg, index) => !isEqual(arg, a[index]))
+}
+
+function createHookCallback<T extends (...args: any[]) => any>(callback: T, current: Fiber): T {
+    return ((...args: any[]) => {
         setCurrentFC(current)
         return callback(...args)
     }) as T
-}
-
-function isChanged(a?: Dependencies, b?: Dependencies) {
-    return !a || a.length !== b?.length || b.some((arg, index) => !Object.is(arg, a[index]))
 }

@@ -4,7 +4,7 @@ import { FiberHost } from './fiber'
 
 export type RexieNode = PIXI.ContainerChild
 
-export function createNode(fiber: FiberHost) {
+export function createNode(fiber: FiberHost): PIXI.Container {
     let node: PIXI.Container
     switch (fiber.type) {
         case 'text':
@@ -28,9 +28,9 @@ export function createNode(fiber: FiberHost) {
 
 export function updateNode(
     node: PIXI.Container,
-    newProps: Record<string, any>,
-    oldProps: Record<string, any>,
-) {
+    newProps: Readonly<Record<string, any>>,
+    oldProps: Readonly<Record<string, any>>,
+): void {
     new Set([...Object.keys(newProps), ...Object.keys(oldProps)]).forEach(key => {
         const newProp = newProps[key]
         const oldProp = oldProps[key]
@@ -55,7 +55,7 @@ export function updateNode(
     })
 }
 
-export function placeNode(parent: RexieNode, newChild: RexieNode, oldChild?: RexieNode) {
+export function placeNode(parent: RexieNode, newChild: RexieNode, oldChild?: RexieNode): void {
     if (oldChild) {
         parent.addChildAt(newChild, parent.getChildIndex(oldChild))
     } else {
@@ -63,7 +63,7 @@ export function placeNode(parent: RexieNode, newChild: RexieNode, oldChild?: Rex
     }
 }
 
-export function removeNode(child: RexieNode) {
+export function removeNode(child: RexieNode): void {
     child.removeFromParent()
     // PixiJS ensures destroyed nodes are not removed again
     child.destroy({ children: true })

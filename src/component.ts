@@ -1,28 +1,28 @@
-import { normalizeChildren } from './h'
+import { normalizeChildrenToFibers } from './h'
 import { resetHookIndex } from './hooks'
-import { createNode } from './pixijs'
+import { createNode, RexieNode } from './pixijs'
 import { IntrinsicAttributes, Children, Fiber, FiberFC, FiberHost } from './fiber'
-import { reconcileChildren } from './reconcile'
+import { reconcileFiberChildrenShallowly } from './reconcile'
+import { FiberRoot } from './root'
 
 export interface ExternalFC<P = IntrinsicAttributes> extends Omit<FC<P>, 'id'> {
     (props: P & IntrinsicAttributes): Fiber
 }
+
 export interface FC<P = IntrinsicAttributes> {
     (props: P & IntrinsicAttributes): Children
     id: string
     memo?: boolean
-    shouldUpdate?: (newProps: P, oldProps: P) => boolean
+    shouldUpdate?: (newProps: Readonly<P>, oldProps: Readonly<P>) => boolean
 }
 
-let currentFC: Fiber | undefined = undefined
-export const setCurrentFC = (fiber?: Fiber) => (currentFC = fiber)
+let currentFC: Fiber | undefined
 
-/**
- * Retrieves the current function component (FC).
- *
- * @throws Throws an error if the current function component is not set.
- */
-export function getCurrentFC() {
+export function setCurrentFC(fiber: Fiber): void {
+    currentFC = fiber
+}
+
+export function getCurrentFC(): Fiber {
     if (!currentFC) {
         throw new Error('Invalid hook call')
     }
@@ -30,9 +30,9 @@ export function getCurrentFC() {
     return currentFC
 }
 
-export function updateComponent(fiber: Fiber) {
+export function updateComponent(fiber: Fiber): void {
     fiber.root = findRoot(fiber)
-    if (__DEV__ && !fiber.root) {
+    if (!fiber.root) {
         throw new Error('Not found the root.')
     }
 
@@ -43,7 +43,7 @@ export function updateComponent(fiber: Fiber) {
     }
 }
 
-function findRoot(fiber: Fiber) {
+function findRoot(fiber: Readonly<Fiber>): FiberRoot | undefined {
     let parent = fiber
     while (parent) {
         if (parent.root) {
@@ -58,47 +58,26 @@ function findRoot(fiber: Fiber) {
     }
 }
 
-function updateFC(fiber: FiberFC) {
+function updateFC(fiber: FiberFC): void {
     resetHookIndex()
     setCurrentFC(fiber)
-    fiber.child = reconcileChildren(fiber, normalizeChildren((fiber.type as FC)(fiber.props)))
+    reconcileFiberChildrenShallowly(fiber, normalizeChildrenToFibers(fiber.type(fiber.props)))
 }
 
-export function isMemoizedComponent(fiber: Fiber) {
-    if (fiber.fc && fiber.type.memo && fiber.type === fiber.old?.type && fiber.old.props) {
-        const shouldUpdate = fiber.type.shouldUpdate || havePropsChanged
-        if (!shouldUpdate(fiber.props, fiber.old.props)) {
-            return true
-        }
-    }
-    return false
-}
-
-function havePropsChanged(a: Record<string, unknown>, b: Record<string, unknown>) {
-    for (const k in a) {
-        if (!(k in b)) {
-            return true
-        }
-    }
-    for (const k in b) {
-        if (a[k] !== b[k]) {
-            return true
-        }
-    }
-}
-
-function updateHost(fiber: FiberHost) {
+function updateHost(fiber: FiberHost): void {
     fiber.parentNode = findClosestHostParentNode(fiber)
-    if (__DEV__ && !fiber.parentNode) {
-        throw new Error('Not found the root node.')
+    if (!fiber.parentNode) {
+        throw new Error('Not found the parent node.')
     }
+
     if (!fiber.node) {
         fiber.node = createNode(fiber)
     }
-    fiber.child = reconcileChildren(fiber, fiber.props.children || [])
+
+    reconcileFiberChildrenShallowly(fiber, fiber.props.children || [])
 }
 
-function findClosestHostParentNode(fiber: FiberHost) {
+function findClosestHostParentNode(fiber: Readonly<FiberHost>): RexieNode | undefined {
     let parent = fiber?.parent
     while (parent) {
         if (!parent.fc) {
@@ -111,4 +90,32 @@ function findClosestHostParentNode(fiber: FiberHost) {
             return parent.root?.node
         }
     }
+}
+
+export function isMemoizedComponent(fiber: Readonly<Fiber>): boolean {
+    if (fiber.fc && fiber.type.memo && fiber.type === fiber.old?.type && fiber.old.props) {
+        const shouldUpdate = fiber.type.shouldUpdate || havePropsChangedShallowly
+        if (!shouldUpdate(fiber.props, fiber.old.props)) {
+            return true
+        }
+    }
+    return false
+}
+
+function havePropsChangedShallowly(
+    a: Readonly<Record<string, unknown>>,
+    b: Readonly<Record<string, unknown>>,
+): boolean {
+    for (const k in a) {
+        if (!(k in b)) {
+            return true
+        }
+    }
+    for (const k in b) {
+        if (a[k] !== b[k]) {
+            return true
+        }
+    }
+
+    return false
 }

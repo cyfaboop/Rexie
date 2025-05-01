@@ -1,5 +1,12 @@
-export const isString = (a: unknown): a is string => typeof a === 'string'
-export const isFunction = (a: unknown): a is Function => typeof a === 'function'
-export const isEqual = (a: unknown, b: unknown) =>
-    // Faster than Object.is
-    a === b || (a !== a && b !== b)
+export function isString(a: unknown): a is string {
+    return typeof a === 'string'
+}
+
+export function isFunction(a: unknown): a is Function {
+    return typeof a === 'function'
+}
+
+// Faster than Object.is
+export function isEqual(a: unknown, b: unknown): boolean {
+    return a === b || (a !== a && b !== b)
+}

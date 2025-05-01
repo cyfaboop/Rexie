@@ -4,13 +4,19 @@ import { RexieNode } from './pixijs'
 import { schedule } from './schedule'
 import { performSyncWork, performConcurrentWork } from './workLoop'
 
-export function createRoot(node: RexieNode) {
+/**
+ * Creates a root for the given node.
+ *
+ * @param node The node to be used as the root.
+ *
+ * @returns A new FiberRoot instance.
+ */
+export function createRoot(node: RexieNode): FiberRoot {
     return new FiberRoot(node)
 }
 
 export class FiberRoot {
     public node: RexieNode
-    public current?: Fiber
     public deletions: Fiber[] = []
 
     constructor(node: RexieNode) {
@@ -19,22 +25,23 @@ export class FiberRoot {
 
     private _unmount?: () => void
 
-    public render(fiber: Fiber, sync: true): void
-    public render(fiber: Fiber, sync: false): (() => void) | void
-    public render(fiber: Fiber, sync?: boolean): (() => void) | void
-    public render(fiber: Fiber, sync = false) {
-        if (this.current) {
-            this.unmount()
-        }
-
+    /**
+     * Renders the given fiber tree.
+     *
+     * @param fiber The fiber tree to be rendered.
+     * @param sync Whether to render synchronously or asynchronously.
+     */
+    public render(fiber: Fiber, sync = false): void {
         fiber.root = this
-        this.current = fiber
         this._unmount = update(fiber, sync) || undefined
     }
 
-    public unmount() {
+    /**
+     * Unmounts the fiber tree.
+     */
+    public unmount(): void {
         this._unmount?.()
-        this.current = undefined
+        this._unmount = undefined
         this.deletions = []
     }
 }

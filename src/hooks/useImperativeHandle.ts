@@ -3,15 +3,18 @@ import { Ref } from 'src/ref'
 import { isFunction } from 'src/util'
 
 /**
- * @param ref The ref that will be mutated
- * @param create The function that will be executed to get the value that will be attached to ref.current
+ * useImperativeHandle is a hook that allows you to customize the instance value
+ * that is exposed to parent components when using ref.
+ *
+ * @param ref The ref that will be mutated.
+ * @param create The function that will be executed to get the value that will be attached to ref.current.
  * @param dependencies If present, effect will only activate if the values in the list change (using Object.is).
  */
 export function useImperativeHandle<T, R extends T>(
     ref: Ref<T | null>,
     create: () => R,
     dependencies?: Dependencies,
-) {
+): void {
     useLayout(
         () => {
             if (isFunction(ref)) {

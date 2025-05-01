@@ -76,7 +76,7 @@ export type PropsOf<T extends FC | keyof JSX.IntrinsicElements> = Omit<
           : never,
     'key' | 'ref' | 'children'
 > & {
-    children: Fiber[]
+    children?: Fiber[]
 }
 
 export type ExternalPropsOf<T extends ExternalFC<P> | keyof JSX.IntrinsicElements, P = any> =
@@ -92,8 +92,16 @@ export interface IntrinsicAttributes {
 }
 
 export type Key = string | number | symbol | null | undefined
-export type Children = Child[] | Child
-export type Child = Fiber | object | string | number | bigint | boolean | null | undefined
+export type Children =
+    | Children[]
+    | Fiber
+    | object
+    | string
+    | number
+    | bigint
+    | boolean
+    | null
+    | undefined
 
 export const enum Command {
     NONE = 0,

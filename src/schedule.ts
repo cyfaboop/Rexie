@@ -18,7 +18,7 @@ const TASK_YIELD_THRESHOLD_MS = 5
  * For example, search suggestions, data loading, etc., which can be processed later.
  * Marks the wrapped update as non-urgent, and the action will be executed after the UI update.
  */
-export function startTransition(action: () => void | Promise<void>) {
+export function startTransition(action: () => void | Promise<void>): void {
     schedule(action)
 }
 
@@ -26,13 +26,14 @@ export function schedule(action: Action, onResolved?: () => void) {
     const task = { next: action, onResolved } as Task
     taskQueue.push(task)
     scheduleWork(processTaskQueue)
+
     return () => {
         task.cancel = true
         removeTask(task)
     }
 }
 
-function processTaskQueue() {
+function processTaskQueue(): void {
     deadline = performance.now() + TASK_YIELD_THRESHOLD_MS
 
     while (firstTask() && !shouldYield()) {
@@ -42,6 +43,7 @@ function processTaskQueue() {
             return
         }
 
+        // Fix: If the task is a promise, it should be resolved before continuing the loop
         if (task.next instanceof Promise) {
             taskQueue.shift()
             taskQueue.push(task)
@@ -89,13 +91,11 @@ function processTaskQueue() {
     }
 }
 
-/**
- * Determines if the current task should yield control back to the main thread.
- * This function compares the current time with a predefined deadline.
- */
-export const shouldYield = () => performance.now() >= deadline
+export function shouldYield(): boolean {
+    return performance.now() >= deadline
+}
 
-function resolveAsyncTask(task: Task) {
+function resolveAsyncTask(task: Task): void {
     const first = firstTask()
     if (first === task) {
         resolveFirstTask()
@@ -111,9 +111,11 @@ function resolveAsyncTask(task: Task) {
     }
 }
 
-const firstTask = () => taskQueue[0]
+function firstTask(): Task {
+    return taskQueue[0]
+}
 
-function resolveFirstTask() {
+function resolveFirstTask(): void {
     const task = taskQueue.shift()
     if (task) {
         task.next = undefined
@@ -124,7 +126,7 @@ function resolveFirstTask() {
     }
 }
 
-function removeTask(task: Task, after?: () => void) {
+function removeTask(task: Task, after?: () => void): void {
     const index = taskQueue.findIndex(t => t === task)
     if (index > -1) {
         taskQueue.splice(index, 1)
@@ -132,7 +134,7 @@ function removeTask(task: Task, after?: () => void) {
     }
 }
 
-function scheduleWork(work: () => void) {
+function scheduleWork(work: () => void): void {
     if (useMicrotask && typeof queueMicrotask !== 'undefined') queueMicrotask(work)
     else if (typeof MessageChannel !== 'undefined') {
         const { port1, port2 } = new MessageChannel()

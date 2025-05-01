@@ -5,17 +5,17 @@ import { isFunction } from './util'
 import { Fiber, FiberFinish, Command } from './fiber'
 import { schedule } from './schedule'
 
-export function commitWork(fiber: FiberFinish) {
+export function commitWork(fiber: FiberFinish): void {
     commitDeletions(fiber)
     commitCommand(fiber)
 }
 
-function commitDeletions(fiber: FiberFinish) {
+function commitDeletions(fiber: FiberFinish): void {
     fiber.root.deletions.forEach(recursivelyTraverseUnmountFiber)
     fiber.root.deletions = []
 }
 
-export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
+export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish): void {
     if (fiber.destroyed) return
 
     if (fiber.fc) {
@@ -35,7 +35,7 @@ export function recursivelyTraverseUnmountFiber(fiber: Fiber | FiberFinish) {
     fiber.children?.forEach(recursivelyTraverseUnmountFiber)
 }
 
-function commitCommand(fiber?: FiberFinish) {
+function commitCommand(fiber?: FiberFinish): void {
     if (!fiber) return
 
     if (fiber.fc) {
@@ -59,7 +59,7 @@ function commitCommand(fiber?: FiberFinish) {
     commitHookEffects(fiber)
 }
 
-function commitSiblingCommand(fiber?: FiberFinish) {
+function commitSiblingCommand(fiber?: FiberFinish): void {
     if (fiber?.memo) {
         commitSiblingCommand(fiber.sibling)
     } else {
@@ -67,7 +67,7 @@ function commitSiblingCommand(fiber?: FiberFinish) {
     }
 }
 
-function attachRef(ref?: Ref, node?: RexieNode) {
+function attachRef(ref?: Ref, node?: RexieNode): void {
     if (ref) {
         if (isFunction(ref)) {
             ref(node)
@@ -77,20 +77,20 @@ function attachRef(ref?: Ref, node?: RexieNode) {
     }
 }
 
-function commitHookEffects(fiber: Fiber) {
+function commitHookEffects(fiber: Fiber): void {
     if (fiber.hooks) {
         updateEffects(fiber.hooks[HookType.Layout])
         schedule(() => fiber.hooks && updateEffects(fiber.hooks[HookType.Effect]))
     }
 }
 
-function updateEffects(effects: HookState[]) {
+function updateEffects(effects: HookState[]): void {
     unmountEffects(effects)
     effects.forEach(e => (e[2] = e[0]?.()))
     // Only the new effect from the next change will trigger an effect update
     effects.length = 0
 }
 
-function unmountEffects(effects: HookState[]) {
+function unmountEffects(effects: readonly HookState[]): void {
     effects.forEach(e => e[2]?.())
 }
